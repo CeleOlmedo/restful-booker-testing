@@ -118,15 +118,9 @@ restful-booker-testing/
 
 | Integrante | Área |
 |---|---|
-| Cele Olmedo | *(completar)* |
-| *(completar)* | *(completar)* |
-| *(completar)* | *(completar)* |
-| *(completar)* | *(completar)* |
+| Celeste Olmedo | Academia C&S |
+| Noelia Mustaff | Academia C&S |
+| Martin Cabrera | Academia C&S |
+| Agustin Quintana | Academia C&S |
 
 ---
-
-## 📎 Referencias
-
-- [Repositorio en GitHub](https://github.com/CeleOlmedo/restful-booker-testing)
-- [Documentación API — Postman](https://www.postman.com/automation-in-testing/restful-booker-collections/documentation/ci13ds3/restful-booker-platform)
-- [Estrategia QA](./docs/estrategia.md)
