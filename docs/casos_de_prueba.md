@@ -1,6 +1,6 @@
 # Día 38 Proyecto Final - Análisis y Planificación - Mustaff, Cabrera, Quintana y Olmedo
 
-## Casos de Prueba — Booking
+## Casos de Prueba — Booking, Enviar mensajes de contacto, Inicio sesión administrador y Gestion de habitaciones como administrador
 
 | ID | Título | Precondiciones | Pasos | Datos | Resultado Esperado | Tipo de prueba |
 |----|--------|----------------|-------|-------|--------------------|----------------|
