@@ -23,6 +23,11 @@ export class ContactPage extends BasePage {
     await expect(this.submitButton()).toBeVisible();
   }
 
+  async assertContactFormVisible() {
+    const { expect } = await import("@playwright/test");
+    await expect(this.page.locator(this.locators.section)).toBeVisible();
+  }
+
   async completeContactForm(data) {
     await this.nameInput().fill(data.Nombre ?? "");
     await this.emailInput().fill(data.Email ?? "");
