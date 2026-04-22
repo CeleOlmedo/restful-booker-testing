@@ -15,8 +15,7 @@ Given("la aplicación está accesible", async function () {
 });
 
 Given("el usuario está en la página principal", async function () {
-  const visible = await this.pages.homePage.isLoaded();
-  assert.equal(visible, true, "La home no se encuentra visible.");
+  await this.pages.homePage.assertLoaded();
 });
 
 When("completa el formulario con los siguientes datos:", async function (dataTable) {

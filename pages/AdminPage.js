@@ -1,44 +1,63 @@
+import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage.js";
 import { URLS } from "../constants/urls.js";
+import { MESSAGES } from "../constants/messages.js";
 
-class AdminPage extends BasePage {
-  constructor(page) {
-    super(page);
-    this.locators = {
-      username: "#username",
-      password: "#password",
-      loginButton: "#doLogin, button:has-text('Login')",
-      logoutButton: "#logout, button:has-text('Logout')",
-      adminPanel: "#frontPageLink, .roomForm, .admin"
-    };
-  }
+export class AdminPage extends BasePage {
+  usernameInput = () =>
+    this.page.locator("#username").or(this.page.getByLabel(/username/i)).first();
+
+  passwordInput = () =>
+    this.page.locator("#password").or(this.page.getByLabel(/password/i)).first();
+
+  loginButton = () =>
+    this.page.locator("#doLogin").or(this.page.getByRole("button", { name: /login|sign in/i })).first();
+
+  logoutButton = () =>
+    this.page.locator("#logout").or(this.page.getByRole("button", { name: /logout|sign out/i })).first();
 
   async openAdminPanel() {
     await this.goto(URLS.admin);
+    await expect(this.loginButton()).toBeVisible();
   }
 
   async login(credentials) {
-    await this.fill(this.locators.username, credentials.Usuario || "");
-    await this.fill(this.locators.password, credentials["Contraseña"] || "");
+    await this.usernameInput().fill(credentials.Usuario ?? "");
+    await this.passwordInput().fill(credentials["Contraseña"] ?? credentials.Contraseña ?? "");
   }
 
   async submitLogin() {
-    await this.page.locator(this.locators.loginButton).first().click();
+    await this.loginButton().click();
   }
 
-  async isAdminAreaVisible() {
-    return this.page.locator(this.locators.adminPanel).first().isVisible();
+  async assertAdminAreaVisible() {
+    await expect(
+      this.page.getByRole("link", { name: /rooms|messages|home|dashboard|report/i }).first()
+    ).toBeVisible();
+  }
+
+  async assertLoginFormVisible() {
+    await expect(this.usernameInput()).toBeVisible();
+    await expect(this.passwordInput()).toBeVisible();
+    await expect(this.loginButton()).toBeVisible();
+  }
+
+  async assertMessageByKey(messageKey) {
+    const pattern = MESSAGES[messageKey];
+    expect(pattern, `Sin mensaje para clave: ${messageKey}`).toBeTruthy();
+    await expect(this.page.getByText(pattern).first()).toBeVisible();
   }
 
   async logout() {
-    await this.page.locator(this.locators.logoutButton).first().click();
+    await expect(this.logoutButton()).toBeVisible();
+    await this.logoutButton().click();
+    await this.assertLoginFormVisible();
   }
 
-  async isLoginFormVisible() {
-    const userVisible = await this.page.locator(this.locators.username).isVisible();
-    const passVisible = await this.page.locator(this.locators.password).isVisible();
-    return userVisible && passVisible;
+  async navigateToRooms() {
+    const link = this.page.getByRole("link", { name: /^Rooms$/i }).first();
+    await expect(link).toBeVisible();
+    await link.click();
+    await expect(this.page.locator("#roomName").or(this.page.getByRole("heading", { name: /room/i }))).first().toBeVisible();
   }
 }
-
-export { AdminPage };

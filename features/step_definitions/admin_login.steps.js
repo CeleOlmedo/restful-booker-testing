@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
+import { expect } from "@playwright/test";
 import { Given, When, Then } from "@cucumber/cucumber";
 import USERS from "../../data/users.json" with { type: "json" };
-import { MESSAGES } from "../../constants/messages.js";
 
 function tableToObject(dataTable) {
   return dataTable.rows().reduce((acc, row) => {
@@ -31,19 +31,18 @@ When("confirma el inicio de sesión", async function () {
 });
 
 Then("el sistema concede acceso al área administrativa", async function () {
-  const adminAreaVisible = await this.pages.adminPage.isAdminAreaVisible();
-  assert.equal(adminAreaVisible, true, "No se concedió acceso al área administrativa.");
+  await this.pages.adminPage.assertAdminAreaVisible();
 });
 
 Then("el panel muestra las funciones disponibles", async function () {
-  const visible = await this.pages.roomsPage.isRoomsModuleVisible();
-  assert.equal(visible, true, "No se observaron funciones del panel.");
+  await this.pages.adminPage.assertAdminAreaVisible();
 });
 
 Given("el administrador tiene una sesión activa en el panel", async function () {
   await this.pages.adminPage.openAdminPanel();
   await this.pages.adminPage.login(USERS.adminValid);
   await this.pages.adminPage.submitLogin();
+  await this.pages.adminPage.assertAdminAreaVisible();
 });
 
 When("ejecuta el cierre de sesión", async function () {
@@ -51,23 +50,18 @@ When("ejecuta el cierre de sesión", async function () {
 });
 
 Then("el sistema cierra la sesión correctamente", async function () {
-  const loginVisible = await this.pages.adminPage.isLoginFormVisible();
-  assert.equal(loginVisible, true, "No se confirmó el cierre de sesión.");
+  await this.pages.adminPage.assertLoginFormVisible();
 });
 
 Then("el acceso a los módulos administrativos queda bloqueado", async function () {
-  const loginVisible = await this.pages.adminPage.isLoginFormVisible();
-  assert.equal(loginVisible, true, "El acceso a módulos administrativos no quedó bloqueado.");
+  await this.pages.adminPage.openAdminPanel();
+  await this.pages.adminPage.assertLoginFormVisible();
 });
 
 Then("el sistema muestra el mensaje con clave {string}", async function (messageKey) {
-  const expectedMessage = MESSAGES[messageKey];
-  assert.ok(expectedMessage, `No existe el mensaje con clave: ${messageKey}`);
-  const loginVisible = await this.pages.adminPage.isLoginFormVisible();
-  assert.equal(loginVisible, true, "No se observó estado de error esperado.");
+  await this.pages.adminPage.assertMessageByKey(messageKey);
 });
 
 Then("el sistema no concede acceso al área administrativa", async function () {
-  const adminAreaVisible = await this.pages.adminPage.isAdminAreaVisible().catch(() => false);
-  assert.equal(adminAreaVisible, false, "Se concedió acceso administrativo de forma incorrecta.");
+  await expect(this.pages.adminPage.usernameInput()).toBeVisible();
 });

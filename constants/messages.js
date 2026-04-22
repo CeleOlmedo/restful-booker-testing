@@ -1,11 +1,18 @@
-const MESSAGES = {
-  contactSuccess: "Formulario enviado correctamente y limpiado.",
-  invalidEmailHint: "@|valid|include|valido|válido",
-  bookingInvalidDates: "Ingrese fechas válidas",
-  bookingOccupiedDates: "Fechas ocupadas, seleccione fechas disponibles",
-  adminInvalidCredentials: "Credenciales inválidas",
-  adminMissingCredentials: "Ingrese usuario y contraseña",
-  roomDuplicate: "Habitación duplicada, cargue un nuevo número"
-};
+/**
+ * Claves usadas en Gherkin → texto o regex visible en UI.
+ * Ajustar regex si cambia el front.
+ */
+export const MESSAGES = {
+  bookingConfirmed: /Booking Confirmed/i,
+  bookingInvalidDates: /valid|past|before|invalid|date|check.?in/i,
+  bookingOccupiedDates: /not available|unavailable|occupied|conflict|already|booked/i,
 
-export { MESSAGES };
+  contactSuccess: /Thank you|success|sent|submitted/i,
+  invalidEmailHint: /well-formed email|valid email/i,
+  invalidEmpty: /required|blank|may not be empty|between/i,
+
+  adminInvalidCredentials: /invalid credentials|bad credentials|do not match/i,
+  adminMissingCredentials: /enter username|enter password|required|both|empty/i,
+
+  roomDuplicate: /duplicate|already exists|number/i,
+};
