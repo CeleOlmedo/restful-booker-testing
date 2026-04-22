@@ -21,7 +21,7 @@ Feature: Inicio y cierre de sesión administrador
     And el acceso a los módulos administrativos queda bloqueado
 
   @HU-04 @negative @TC-04-004 @TC-04-005 @TC-04-006 @TC-04-007 @TC-04-008
-  Scenario Outline: Validaciones de login inválido con datasets
+  Scenario Outline: Validaciones de login inválido
     When completa el formulario de login con datos de usuario "<dataset_usuario>"
     And confirma el inicio de sesión
     Then el sistema muestra el mensaje con clave "<mensaje_error_clave>"

@@ -12,7 +12,7 @@ Feature: Reserva de habitación
     And selecciona un rango de fechas de estadía válidas
     And completa el formulario con datos de usuario "bookingGuestValid"
     And confirma la reserva
-    Then el sistema muestra confirmación observable de reserva exitosa
+    Then el sistema muestra confirmación "bookingConfirmed"
 
   @HU-01 @TC-01-011 @negative
   Scenario: Reserva rechazada por fechas pasadas
@@ -21,7 +21,7 @@ Feature: Reserva de habitación
     And completa el formulario con datos de usuario "bookingGuestValid"
     And intenta confirmar la reserva
     Then el sistema impide la creación de la reserva
-    And muestra el mensaje con clave "bookingInvalidDates"
+    And muestra el mensaje "bookingInvalidDates"
 
   @HU-01 @TC-01-013 @negative
   Scenario: Reserva rechazada por conflicto de disponibilidad en fechas ocupadas
@@ -30,4 +30,4 @@ Feature: Reserva de habitación
     And completa el formulario con datos de usuario "bookingGuestValid"
     And intenta confirmar la reserva
     Then el sistema impide la creación de la reserva
-    And muestra el mensaje con clave "bookingOccupiedDates"
+    And muestra el mensaje "bookingOccupiedDates"

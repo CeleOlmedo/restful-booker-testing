@@ -15,7 +15,7 @@ Feature: Gestión de habitaciones como administrador
 
   @HU05 @TC-05-004 @negative
   Scenario: Creación de habitación con número duplicado es rechazada
-    Given existe una habitación con número del dataset "roomDuplicate101" en el sistema
+    Given existe una habitación con número "roomDuplicate101" en el sistema
     When intenta crear una habitación con datos de usuario "roomDuplicate101"
     And  confirma la creación
     Then el sistema impide la creación
@@ -27,5 +27,5 @@ Feature: Gestión de habitaciones como administrador
     When edita la descripción de la habitación con datos de usuario "roomDescriptionHolaMundo"
     And  guarda los cambios
     And  navega a la vista pública de la habitación
-    Then la descripción mostrada coincide con el dataset "roomDescriptionHolaMundo"
+    Then la descripción mostrada coincide con "roomDescriptionHolaMundo"
     And  no hay inconsistencias entre el panel admin y el frontend
