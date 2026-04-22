@@ -1,53 +1,64 @@
+import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage.js";
+import { URLS } from "../constants/urls.js";
+import { MESSAGES } from "../constants/messages.js";
 
-class ContactPage extends BasePage {
-  constructor(page) {
-    super(page);
-    this.locators = {
-      section: "#contact",
-      form: "#contact form",
-      name: "#name",
-      email: "#email",
-      phone: "#phone",
-      subject: "#subject",
-      message: "#description",
-      submitButton: "#submitContact",
-      successAlert: ".alert.alert-success",
-      firstInvalidField: ":invalid"
-    };
+export class ContactPage extends BasePage {
+  section = () => this.page.locator("#contact");
+  heading = () => this.page.getByRole("heading", { name: /Send Us a Message/i });
+  nameInput = () => this.page.locator("#name");
+  emailInput = () => this.page.locator("#email");
+  phoneInput = () => this.page.locator("#phone");
+  subjectInput = () => this.page.locator("#subject");
+  messageInput = () => this.page.locator("#description");
+  submitButton = () => this.page.getByRole("button", { name: "Submit" });
+
+  async open() {
+    await this.goto(URLS.contact);
+    await expect(this.heading()).toBeVisible();
   }
 
-  async isContactFormVisible() {
-    return this.isVisible(this.locators.section);
+  async assertFormVisible() {
+    await expect(this.section()).toBeVisible();
+    await expect(this.submitButton()).toBeVisible();
   }
 
   async completeContactForm(data) {
-    await this.fill(this.locators.name, data.Nombre || "");
-    await this.fill(this.locators.email, data.Email || "");
-    await this.fill(this.locators.phone, data.Telefono || "");
-    await this.fill(this.locators.subject, data.Asunto || "");
-    await this.fill(this.locators.message, data.Mensaje || "");
+    await this.nameInput().fill(data.Nombre ?? "");
+    await this.emailInput().fill(data.Email ?? "");
+    await this.phoneInput().fill(data.Telefono ?? "");
+    await this.subjectInput().fill(data.Asunto ?? "");
+    await this.messageInput().fill(data.Mensaje ?? "");
   }
 
   async submit() {
-    await this.page.locator(this.locators.form).evaluate((form) => form.requestSubmit());
+    await this.submitButton().click();
   }
 
-  async getSuccessMessage() {
-    return this.page.locator(this.locators.successAlert).innerText();
+  async assertSubmissionSuccess() {
+    const pattern = MESSAGES.contactSuccess;
+    const successLine = this.section().getByText(pattern).first();
+    if ((await successLine.count()) > 0) {
+      await expect(successLine).toBeVisible();
+      return;
+    }
+    await expect(this.nameInput()).toHaveValue("");
+    await expect(this.emailInput()).toHaveValue("");
   }
 
-  async getValidationMessageFor(locator) {
-    return this.page.locator(locator).evaluate((el) => el.validationMessage);
+  async assertSubmissionBlocked() {
+    await expect(
+      this.section().getByText(/must be|may not be blank|between|required|valid|well-formed/i).first()
+    ).toBeVisible();
   }
 
-  async getFieldValue(locator) {
-    return this.page.locator(locator).inputValue();
+  async assertErrorByKey(messageKey) {
+    const pattern = MESSAGES[messageKey];
+    expect(pattern, `Sin mensaje para clave: ${messageKey}`).toBeTruthy();
+    await expect(this.section().getByText(pattern).first()).toBeVisible();
   }
 
-  async getInvalidFieldsCount() {
-    return this.page.locator(this.locators.firstInvalidField).count();
+  async assertInvalidFieldsVisible() {
+    await expect(this.section().locator(".is-invalid").first()).toBeVisible();
   }
 }
-
-export { ContactPage };

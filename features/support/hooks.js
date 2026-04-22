@@ -1,14 +1,32 @@
-import fs from "node:fs";
-import path from "node:path";
-import { Before, After } from "@cucumber/cucumber";
+import {
+  BeforeAll,
+  AfterAll,
+  Before,
+  After,
+  Status,
+} from "@cucumber/cucumber";
+import { chromium } from "playwright";
 import { HomePage } from "../../pages/HomePage.js";
 import { ContactPage } from "../../pages/ContactPage.js";
 import { BookingPage } from "../../pages/BookingPage.js";
 import { AdminPage } from "../../pages/AdminPage.js";
 import { RoomsAdminPage } from "../../pages/RoomsAdminPage.js";
 
+let globalBrowser;
+
+BeforeAll(async function () {
+  const slowMo = Number(process.env.SLOWMO ?? 0);
+  globalBrowser = await chromium.launch({
+    headless: process.env.HEADED !== "true",
+    slowMo: Number.isFinite(slowMo) ? slowMo : 0,
+  });
+});
+
 Before(async function () {
-  await this.start();
+  this.browser = globalBrowser;
+  this.context = await this.browser.newContext();
+  this.page = await this.context.newPage();
+
   this.pages.homePage = new HomePage(this.page);
   this.pages.contactPage = new ContactPage(this.page);
   this.pages.bookingPage = new BookingPage(this.page);
@@ -17,17 +35,19 @@ Before(async function () {
 });
 
 After(async function (scenario) {
-  const shouldCaptureOnFail = process.env.SCREENSHOT_ON_FAIL === "true";
-
-  if (shouldCaptureOnFail && scenario.result?.status === "FAILED") {
-    const safeName = scenario.pickle.name.replace(/[^a-zA-Z0-9-_]/g, "_");
-    const screenshotsDir = path.resolve("reports/screenshots");
-    fs.mkdirSync(screenshotsDir, { recursive: true });
-    await this.page.screenshot({
-      path: path.join(screenshotsDir, `${Date.now()}-${safeName}.png`),
-      fullPage: true
-    });
+  try {
+    if (scenario.result?.status === Status.FAILED && this.page) {
+      const png = await this.page.screenshot({ fullPage: true });
+      if (typeof this.attach === "function") {
+        await this.attach(png, "image/png");
+      }
+    }
+  } finally {
+    if (this.page) await this.page.close().catch(() => {});
+    if (this.context) await this.context.close().catch(() => {});
   }
+});
 
-  await this.stop();
+AfterAll(async function () {
+  if (globalBrowser) await globalBrowser.close();
 });

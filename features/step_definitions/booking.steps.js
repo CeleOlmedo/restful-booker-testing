@@ -1,28 +1,31 @@
 import assert from "node:assert/strict";
 import { Given, When, Then } from "@cucumber/cucumber";
-import { MESSAGES } from "../../constants/messages.js";
+import USERS from "../../data/users.json" with { type: "json" };
 
 When("selecciona una habitación disponible", async function () {
-  await this.pages.bookingPage.selectFirstAvailableRoom();
   this.currentFormTarget = "booking";
+  await this.pages.bookingPage.selectFirstAvailableRoom();
 });
 
 When("selecciona un rango de fechas de estadía válidas", async function () {
   await this.pages.bookingPage.setValidDateRange();
+  const { checkin, checkout } = this.pages.bookingPage.readDatesFromCurrentUrl();
+  this.bookingCheckin = checkin;
+  this.bookingCheckout = checkout;
 });
 
 When("confirma la reserva", async function () {
   await this.pages.bookingPage.confirmReservation();
 });
 
-Then("el sistema muestra confirmación observable de reserva exitosa", async function () {
-  const loaded = await this.pages.homePage.isLoaded();
-  assert.equal(loaded, true, "No se pudo verificar la confirmación de reserva.");
+Then("el sistema muestra confirmación {string}", async function (key) {
+  assert.equal(key, "bookingConfirmed");
+  await this.pages.bookingPage.assertConfirmationByKey(key);
 });
 
 Given("hay una habitación disponible seleccionada", async function () {
-  await this.pages.bookingPage.selectFirstAvailableRoom();
   this.currentFormTarget = "booking";
+  await this.pages.bookingPage.selectFirstAvailableRoom();
 });
 
 When("ingresa un rango de fechas pasadas a la actual", async function () {
@@ -34,23 +37,31 @@ When("intenta confirmar la reserva", async function () {
 });
 
 Then("el sistema impide la creación de la reserva", async function () {
-  const loaded = await this.pages.homePage.isLoaded();
-  assert.equal(loaded, true, "No se pudo validar el bloqueo de reserva.");
+  await this.pages.bookingPage.assertReservationBlocked();
 });
 
-Then("muestra el mensaje con clave {string}", async function (messageKey) {
-  const expectedMessage = MESSAGES[messageKey];
-  assert.ok(expectedMessage, `No existe el mensaje con clave: ${messageKey}`);
-  const visible = await this.pages.homePage.isLoaded();
-  assert.equal(visible, true, "No se pudo validar el mensaje esperado.");
+Then("muestra el mensaje {string}", async function (key) {
+  await this.pages.bookingPage.assertMessageByKey(key);
 });
 
 Given("existe una reserva previa en el rango de fechas a utilizar", async function () {
-  this.hasPreviousReservation = true;
-  assert.equal(this.hasPreviousReservation, true);
+  this.currentFormTarget = "booking";
+  await this.pages.bookingPage.selectFirstAvailableRoom();
+  await this.pages.bookingPage.setValidDateRange();
+  const { checkin, checkout } = this.pages.bookingPage.readDatesFromCurrentUrl();
+  this.bookingCheckin = checkin;
+  this.bookingCheckout = checkout;
+  const guest = USERS.bookingGuestValid;
+  await this.pages.bookingPage.fillReservationGuest(guest);
+  await this.pages.bookingPage.confirmReservation();
+  await this.pages.bookingPage.assertConfirmationByKey("bookingConfirmed");
 });
 
 When("selecciona la misma habitación con las mismas fechas ya ocupadas", async function () {
+  assert.ok(this.bookingCheckin && this.bookingCheckout, "Faltan fechas guardadas para el escenario de conflicto");
   await this.pages.bookingPage.selectFirstAvailableRoom();
-  await this.pages.bookingPage.setValidDateRange();
+  await this.pages.bookingPage.setOccupiedRangeSameAsStored(
+    this.bookingCheckin,
+    this.bookingCheckout
+  );
 });

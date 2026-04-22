@@ -1,105 +1,92 @@
 import assert from "node:assert/strict";
 import { Given, When, Then } from "@cucumber/cucumber";
 import USERS from "../../data/users.json" with { type: "json" };
-import { MESSAGES } from "../../constants/messages.js";
 
-function tableToObject(dataTable) {
-  return dataTable.rows().reduce((acc, row) => {
-    const [campo, valor] = row;
-    if (campo !== "Campo") acc[campo] = valor;
-    return acc;
-  }, {});
-}
-
-Given("el administrador tiene sesión activa", async function () {
+Given("el administrador tiene sesi\u00F3n activa", async function () {
   await this.pages.adminPage.openAdminPanel();
   await this.pages.adminPage.login(USERS.adminValid);
   await this.pages.adminPage.submitLogin();
+  await this.pages.adminPage.assertAdminAreaVisible();
 });
 
-Given("está en el módulo Rooms", async function () {
-  const visible = await this.pages.roomsPage.isRoomsModuleVisible();
-  assert.equal(visible, true, "El módulo Rooms no está visible.");
+Given("est\u00E1 en el m\u00F3dulo Rooms", async function () {
+  await this.pages.adminPage.navigateToRooms();
   this.currentFormTarget = "rooms";
 });
 
-When("selecciona la opción de crear habitación", async function () {
+When("selecciona la opci\u00F3n de crear habitaci\u00F3n", async function () {
   this.currentFormTarget = "rooms";
+  await this.pages.roomsPage.startCreateRoom();
 });
 
-When("confirma la creación", async function () {
+When("confirma la creaci\u00F3n", async function () {
   await this.pages.roomsPage.submitRoomCreation();
 });
 
-Then("la habitación se crea sin errores", async function () {
-  const hasRooms = await this.pages.roomsPage.hasAnyRoomInList();
-  assert.equal(hasRooms, true, "No se pudo validar la creación de la habitación.");
+Then("la habitaci\u00F3n se crea sin errores", async function () {
+  await this.pages.roomsPage.assertRoomNumberInList("101");
 });
 
 Then("aparece en el listado administrativo con los datos ingresados", async function () {
-  const hasRooms = await this.pages.roomsPage.hasAnyRoomInList();
-  assert.equal(hasRooms, true, "La habitación no apareció en el listado.");
+  await this.pages.roomsPage.assertRoomNumberInList("101");
 });
 
-Given("existe una habitación con número del dataset {string} en el sistema", async function (userKey) {
-  const roomData = USERS[userKey];
-  assert.ok(roomData, `No existe el dataset de habitación: ${userKey}`);
-  this.existingRoomNumber = roomData["Número"];
-});
-
-When("intenta crear una habitación con datos de usuario {string}", async function (userKey) {
-  const roomData = USERS[userKey];
-  assert.ok(roomData, `No existe el dataset de habitación: ${userKey}`);
-  await this.pages.roomsPage.completeRoomForm(roomData);
+Given("existe una habitaci\u00F3n con n\u00FAmero {string} en el sistema", async function (datasetKey) {
+  const roomData = USERS[datasetKey];
+  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${datasetKey}`);
   this.currentFormTarget = "rooms";
+  const num = String(roomData["N\u00FAmero"]);
+  const alreadyListed = await this.page.getByText(new RegExp(`\\b${num}\\b`)).count();
+  if (alreadyListed === 0) {
+    await this.pages.roomsPage.startCreateRoom();
+    await this.pages.roomsPage.completeRoomForm(USERS.roomValid101);
+    await this.pages.roomsPage.submitRoomCreation();
+  }
+  await this.pages.roomsPage.assertRoomNumberInList(num);
 });
 
-Then("el sistema impide la creación", async function () {
-  const visible = await this.pages.roomsPage.isRoomsModuleVisible();
-  assert.equal(visible, true, "No se pudo validar el rechazo de la creación.");
-});
-
-Given("existe una habitación en el listado administrativo", async function () {
-  const hasRooms = await this.pages.roomsPage.hasAnyRoomInList();
-  assert.equal(hasRooms, true, "No hay habitaciones para validar el escenario.");
-});
-
-When('edita la descripción de la habitación con el valor {string}', async function (description) {
-  this.updatedDescription = description;
-});
-
-When("edita la descripción de la habitación con datos de usuario {string}", async function (userKey) {
+When("intenta crear una habitaci\u00F3n con datos de usuario {string}", async function (userKey) {
   const roomData = USERS[userKey];
-  assert.ok(roomData, `No existe el dataset de habitación: ${userKey}`);
+  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${userKey}`);
+  this.currentFormTarget = "rooms";
+  await this.pages.roomsPage.startCreateRoom();
+  await this.pages.roomsPage.completeRoomForm(roomData);
+});
+
+Then("el sistema impide la creaci\u00F3n", async function () {
+  await this.pages.roomsPage.assertCreationRejected();
+});
+
+Given("existe una habitaci\u00F3n en el listado administrativo", async function () {
+  await this.pages.roomsPage.assertHasAnyRoomRow();
+});
+
+When("edita la descripci\u00F3n de la habitaci\u00F3n con datos de usuario {string}", async function (userKey) {
+  const roomData = USERS[userKey];
+  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${userKey}`);
   this.updatedDescription = roomData.descripcion;
+  await this.pages.roomsPage.editFirstRoomDescription(roomData.descripcion);
 });
 
 When("guarda los cambios", async function () {
-  assert.equal(Boolean(this.updatedDescription), true, "No se cargó una descripción para guardar.");
+  assert.ok(this.updatedDescription, "No hay descripci\u00F3n cargada para guardar.");
+  await this.pages.roomsPage.saveRoomChanges();
 });
 
-When("navega a la vista pública de la habitación", async function () {
-  await this.pages.homePage.open();
+When("navega a la vista p\u00FAblica de la habitaci\u00F3n", async function () {
+  await this.pages.roomsPage.openFirstRoomPublicView();
 });
 
-Then('la descripción mostrada es {string}', async function (description) {
-  assert.equal(this.updatedDescription, description, "La descripción no coincide con el valor esperado.");
-});
-
-Then("la descripción mostrada coincide con el dataset {string}", async function (userKey) {
-  const roomData = USERS[userKey];
-  assert.ok(roomData, `No existe el dataset de habitación: ${userKey}`);
-  assert.equal(this.updatedDescription, roomData.descripcion, "La descripción no coincide con el dataset.");
+Then("la descripci\u00F3n mostrada coincide con {string}", async function (datasetKey) {
+  const roomData = USERS[datasetKey];
+  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${datasetKey}`);
+  await this.pages.roomsPage.assertDescriptionVisible(roomData.descripcion);
 });
 
 Then("muestra el mensaje de rooms con clave {string}", async function (messageKey) {
-  const expectedMessage = MESSAGES[messageKey];
-  assert.ok(expectedMessage, `No existe el mensaje con clave: ${messageKey}`);
-  const visible = await this.pages.roomsPage.isRoomsModuleVisible();
-  assert.equal(visible, true, "No se pudo validar el mensaje esperado en Rooms.");
+  await this.pages.roomsPage.assertMessageByKey(messageKey);
 });
 
 Then("no hay inconsistencias entre el panel admin y el frontend", async function () {
-  const loaded = await this.pages.homePage.isLoaded();
-  assert.equal(loaded, true, "No se pudo completar la validación de consistencia.");
+  await this.pages.homePage.assertLoaded();
 });

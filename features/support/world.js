@@ -1,30 +1,19 @@
-import { setWorldConstructor, setDefaultTimeout } from "@cucumber/cucumber";
-import { chromium } from "@playwright/test";
+import { setWorldConstructor } from "@cucumber/cucumber";
 
 class CustomWorld {
-  constructor() {
+  constructor({ attach } = {}) {
+    this.attach = attach;
     this.browser = null;
     this.context = null;
     this.page = null;
     this.pages = {};
-  }
-
-  async start() {
-    const headed = process.env.HEADED === "true";
-    this.browser = await chromium.launch({ headless: !headed });
-    this.context = await this.browser.newContext();
-    this.page = await this.context.newPage();
-  }
-
-  async stop() {
-    if (this.context) {
-      await this.context.close();
-    }
-    if (this.browser) {
-      await this.browser.close();
-    }
+    /** Contexto para `completa el formulario con datos de usuario` (common). */
+    this.currentFormTarget = null;
+    /** Fechas de la última reserva creada (escenario conflicto). */
+    this.bookingCheckin = null;
+    this.bookingCheckout = null;
+    this.updatedDescription = null;
   }
 }
 
 setWorldConstructor(CustomWorld);
-setDefaultTimeout(30000);

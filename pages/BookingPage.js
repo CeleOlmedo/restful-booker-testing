@@ -1,63 +1,121 @@
+import { expect } from "@playwright/test";
 import { BasePage } from "./BasePage.js";
+import { URLS, reservationUrl } from "../constants/urls.js";
+import { MESSAGES } from "../constants/messages.js";
 
-class BookingPage extends BasePage {
-  constructor(page) {
-    super(page);
-    this.locators = {
-      firstRoomCard: ".room-card, .card",
-      firstBookButton: "button:has-text('Book this room')",
-      checkin: "input[name='checkin'], input[placeholder*='Check in']",
-      checkout: "input[name='checkout'], input[placeholder*='Check out']",
-      firstname: "input[name='firstname'], #firstname",
-      lastname: "input[name='lastname'], #lastname",
-      email: "input[name='email'], #email",
-      phone: "input[name='phone'], #phone",
-      reserveButton: "button:has-text('Reserve Now'), button:has-text('Book')"
+export class BookingPage extends BasePage {
+  bookNowLink = () =>
+    this.page.locator("#rooms").getByRole("link", { name: /book now/i }).first();
+
+  reserveNowFirst = () => this.page.getByRole("button", { name: "Reserve Now" }).first();
+  reserveNowLast = () => this.page.getByRole("button", { name: "Reserve Now" }).last();
+
+  firstName = () => this.page.locator('input[name="firstname"]');
+  lastName = () => this.page.locator('input[name="lastname"]');
+  email = () => this.page.locator('input[name="email"]');
+  phone = () => this.page.locator('input[name="phone"]');
+
+  roomIdFromUrl() {
+    const m = this.page.url().match(/\/reservation\/(\d+)/);
+    return m ? Number(m[1]) : 1;
+  }
+
+  readDatesFromCurrentUrl() {
+    const u = new URL(this.page.url());
+    return {
+      checkin: u.searchParams.get("checkin") ?? "",
+      checkout: u.searchParams.get("checkout") ?? "",
     };
   }
 
-  async isBookingEntryPointVisible() {
-    const roomCardVisible = await this.page.locator(this.locators.firstRoomCard).first().isVisible();
-    const bookButtonVisible = await this.page.locator(this.locators.firstBookButton).first().isVisible();
-    return roomCardVisible && bookButtonVisible;
+  isoAddDays(base, days) {
+    const d = new Date(base);
+    d.setUTCDate(d.getUTCDate() + days);
+    const y = d.getUTCFullYear();
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
   }
 
   async selectFirstAvailableRoom() {
-    await this.page.locator(this.locators.firstBookButton).first().click().catch(() => {});
+    await this.goto(URLS.rooms);
+    await expect(this.bookNowLink()).toBeVisible();
+    await this.bookNowLink().click();
+    await this.page.waitForURL(/\/reservation\/\d+/);
+    await expect(this.reserveNowFirst()).toBeVisible();
   }
 
   async setValidDateRange() {
-    const today = new Date();
-    const inDate = new Date(today);
-    inDate.setDate(today.getDate() + 3);
-    const outDate = new Date(today);
-    outDate.setDate(today.getDate() + 5);
-    const format = (d) => d.toISOString().slice(0, 10);
-    await this.page.locator(this.locators.checkin).first().fill(format(inDate)).catch(() => {});
-    await this.page.locator(this.locators.checkout).first().fill(format(outDate)).catch(() => {});
+    const roomId = this.roomIdFromUrl();
+    const checkin = this.isoAddDays(new Date(), 45);
+    const checkout = this.isoAddDays(new Date(), 47);
+    await this.goto(reservationUrl(roomId, checkin, checkout));
+    await expect(this.reserveNowFirst()).toBeVisible();
   }
 
   async setPastDateRange() {
-    const today = new Date();
-    const inDate = new Date(today);
-    inDate.setDate(today.getDate() - 5);
-    const outDate = new Date(today);
-    outDate.setDate(today.getDate() - 3);
-    const format = (d) => d.toISOString().slice(0, 10);
-    await this.page.locator(this.locators.checkin).first().fill(format(inDate)).catch(() => {});
-    await this.page.locator(this.locators.checkout).first().fill(format(outDate)).catch(() => {});
+    const roomId = this.roomIdFromUrl();
+    await this.goto(reservationUrl(roomId, "2020-01-01", "2020-01-02"));
+    await expect(this.reserveNowFirst()).toBeVisible();
   }
 
+  async setOccupiedRangeSameAsStored(checkin, checkout) {
+    const roomId = this.roomIdFromUrl();
+    await this.goto(reservationUrl(roomId, checkin, checkout));
+    await expect(this.reserveNowFirst()).toBeVisible();
+  }
+
+  async openGuestModal() {
+    if (!(await this.firstName().isVisible().catch(() => false))) {
+      await this.reserveNowFirst().click();
+    }
+    await expect(this.firstName()).toBeVisible();
+  }
+
+  /**
+   * @param {Record<string, string>} data — Nombre, Apellido, Email, Teléfono
+   */
   async fillReservationGuest(data) {
-    await this.page.locator(this.locators.firstname).first().fill(data.Nombre || "").catch(() => {});
-    await this.page.locator(this.locators.lastname).first().fill(data.Apellido || "").catch(() => {});
-    await this.page.locator(this.locators.email).first().fill(data.Email || "").catch(() => {});
-    await this.page.locator(this.locators.phone).first().fill(data["Teléfono"] || "").catch(() => {});
+    await this.openGuestModal();
+    await this.firstName().fill(data.Nombre ?? "");
+    await this.lastName().fill(data.Apellido ?? "");
+    let email = data.Email ?? "";
+    if (email.includes("@")) {
+      const [local, domain] = email.split("@");
+      email = `${local}+${Date.now()}@${domain}`;
+    }
+    await this.email().fill(email);
+    await this.phone().fill(data["Teléfono"] ?? data.Telefono ?? "");
   }
 
   async confirmReservation() {
-    await this.page.locator(this.locators.reserveButton).first().click().catch(() => {});
+    const buttons = this.page.getByRole("button", { name: "Reserve Now" });
+    const count = await buttons.count();
+    if (count > 1) {
+      await buttons.last().click();
+    } else {
+      await buttons.first().click();
+    }
+  }
+
+  async assertConfirmationByKey(key) {
+    const pattern = MESSAGES[key];
+    expect(pattern, `Sin mensaje para clave: ${key}`).toBeTruthy();
+    await expect(this.page.getByText(pattern).first()).toBeVisible();
+  }
+
+  async assertReservationBlocked() {
+    const modalOpen = await this.firstName().isVisible().catch(() => false);
+    const errorLocator = this.page.getByText(
+      /invalid|error|must be|required|valid|not available|occupied|conflict/i
+    );
+    const hasError = (await errorLocator.count()) > 0;
+    expect(modalOpen || hasError).toBeTruthy();
+  }
+
+  async assertMessageByKey(messageKey) {
+    const pattern = MESSAGES[messageKey];
+    expect(pattern, `Sin mensaje para clave: ${messageKey}`).toBeTruthy();
+    await expect(this.page.getByText(pattern).first()).toBeVisible();
   }
 }
-
-export { BookingPage };
