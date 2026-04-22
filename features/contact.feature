@@ -18,11 +18,12 @@ Feature: Enviar mensaje de contacto
     When completa el formulario con datos de usuario "contactInvalidEmail"
     And envia el formulario de contacto
     Then el sistema impide el envío
-    And muestra el error "invalidEmailHint"
+    And muestra el error con clave "invalidEmailHint" en el campo "Email"
 
   @HU-03 @TC-03-012 @smoke
   Scenario: Envío con todos los campos vacíos
     When completa el formulario con datos de usuario "contactEmpty"
     And envia el formulario de contacto
     Then el sistema impide el envío
-    And muestra el error "invalidEmpty"
+    And muestra el error con clave "invalidEmpty" en el campo "Email"
+    And el sistema muestra un panel de error con mensajes de validación
