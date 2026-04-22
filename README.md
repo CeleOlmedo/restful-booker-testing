@@ -52,50 +52,56 @@ npx playwright install
 ## ▶️ Cómo ejecutar los tests
 
 ```bash
-# Ejecutar todos los tests
-npm test
-
-# Ejecutar solo tests de UI
+# Ejecutar la suite UI configurada en Cucumber
 npm run test:ui
 
-# Ejecutar solo tests de API
-npm run test:api
+# Ejecutar la suite UI en modo headed
+npm run test:ui:headed
 
-# Ejecutar con reporte Allure
-npm run test:report
+# Ejecutar solo escenarios de contacto (@ui @contact)
+npm run test:ui:contact
 ```
 
-> ⚠️ Los scripts de ejecución se irán completando a medida que avance el proyecto.
+La ejecución UI usa `DEBUG=pw:api` para registrar logs de Playwright API.
+Si querés screenshots en fallos, activalos con `SCREENSHOT_ON_FAIL=true`.
+
+```bash
+# Ejemplo (PowerShell)
+$env:SCREENSHOT_ON_FAIL="true"; npm run test:ui
+```
 
 ---
 
-## 📁 Estructura del proyecto
+## 📁 Estructura del proyecto (POM + BDD)
 
 ```
 restful-booker-testing/
-├── constants/          # Constantes globales (URLs, timeouts, etc.)
-├── data/               # Datos de prueba
+├── constants/          # URLs y mensajes reutilizables
+├── data/               # Datos de prueba centralizados
 ├── pages/              # Page Object Models
 │   ├── BasePage.js
-│   ├── LoginPage.js
+│   ├── HomePage.js
 │   ├── BookingPage.js
-│   └── ContactPage.js
-├── features/           # Escenarios Gherkin y step definitions
-│   ├── login.feature
+│   ├── ContactPage.js
+│   ├── AdminPage.js
+│   └── RoomsAdminPage.js
+├── features/           # Escenarios Gherkin
 │   ├── booking.feature
 │   ├── contact.feature
+│   ├── admin_login.feature
+│   ├── rooms_admin.feature
 │   ├── step_definitions/
-│   │   ├── login.steps.js
+│   │   ├── common.steps.js
 │   │   ├── booking.steps.js
-│   │   └── contact.steps.js
+│   │   ├── contact.steps.js
+│   │   ├── admin_login.steps.js
+│   │   └── rooms_admin.steps.js
 │   └── support/
 │       ├── world.js
 │       └── hooks.js
-├── api/                # Tests de API con Axios
-│   └── booking.api.test.js
-├── reports/            # Reportes generados por Allure
+├── reports/            # Evidencia de ejecución
 │   └── screenshots/
-├── playwright.config.js
+├── cucumber.js
 └── package.json
 ```
 
