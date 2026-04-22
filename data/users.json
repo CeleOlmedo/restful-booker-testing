@@ -1,0 +1,70 @@
+{
+  "bookingGuestValid": {
+    "Nombre": "Juan",
+    "Apellido": "Lopez",
+    "Email": "juan@email.com",
+    "Teléfono": "12345678901"
+  },
+  "contactValid": {
+    "Nombre": "Ana",
+    "Email": "ana.torres@example.com",
+    "Telefono": "11223344556",
+    "Asunto": "Consulta de reserva",
+    "Mensaje": "Quiero confirmar disponibilidad para el proximo fin de semana."
+  },
+  "contactInvalidEmail": {
+    "Nombre": "Ana",
+    "Email": "ana.torres.example.com",
+    "Telefono": "11223344556",
+    "Asunto": "Consulta de reserva",
+    "Mensaje": "Mensaje de prueba para validar email invalido."
+  },
+  "contactEmpty": {
+    "Nombre": "",
+    "Email": "",
+    "Telefono": "",
+    "Asunto": "",
+    "Mensaje": ""
+  },
+  "adminValid": {
+    "Usuario": "admin",
+    "Contraseña": "password"
+  },
+  "adminInvalidWrongPassword": {
+    "Usuario": "admin",
+    "Contraseña": "wrongpass"
+  },
+  "adminInvalidUnknownUser": {
+    "Usuario": "usuarioinexistente",
+    "Contraseña": "password"
+  },
+  "adminInvalidBothEmpty": {
+    "Usuario": "",
+    "Contraseña": ""
+  },
+  "adminInvalidUserEmpty": {
+    "Usuario": "",
+    "Contraseña": "password"
+  },
+  "adminInvalidPasswordEmpty": {
+    "Usuario": "admin",
+    "Contraseña": ""
+  },
+  "roomValid101": {
+    "Número": "101",
+    "Tipo": "Double",
+    "Accesible": "true",
+    "Precio": "150",
+    "Room Details": "Wifi, TV, Radio"
+  },
+  "roomDuplicate101": {
+    "Número": "101",
+    "Tipo": "Double",
+    "Accesible": "true",
+    "Precio": "150",
+    "Room Details": "Wifi, TV, Radio"
+  },
+  "roomDescriptionHolaMundo": {
+    "descripcion": "Hola Mundo"
+  }
+}

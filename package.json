@@ -1,0 +1,16 @@
+{
+  "name": "restful-booker-testing",
+  "version": "1.0.0",
+  "description": "UI automation with Cucumber + Playwright using POM",
+  "type": "module",
+  "scripts": {
+    "test:ui": "cross-env DEBUG=pw:api cucumber-js --config cucumber.js",
+    "test:ui:headed": "cross-env DEBUG=pw:api HEADED=true cucumber-js --config cucumber.js",
+    "test:ui:contact": "cross-env DEBUG=pw:api cucumber-js --config cucumber.js --tags \"@ui and @contact\""
+  },
+  "devDependencies": {
+    "@cucumber/cucumber": "^11.2.0",
+    "@playwright/test": "^1.53.0",
+    "cross-env": "^7.0.3"
+  }
+}
