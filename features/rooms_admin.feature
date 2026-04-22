@@ -5,6 +5,7 @@ Feature: Gestión de habitaciones como administrador
     Given el administrador tiene sesión activa
     And  está en el módulo Rooms
 
+  @HU05 @TC-05-001 @happy_path
   Scenario: Crear habitación con datos válidos
     When selecciona la opción de crear habitación
     And  completa el formulario con los siguientes datos:
@@ -18,6 +19,7 @@ Feature: Gestión de habitaciones como administrador
     Then la habitación se crea sin errores
     And  aparece en el listado administrativo con los datos ingresados
 
+  @HU05 @TC-05-004 @negative
   Scenario: Creación de habitación con número duplicado es rechazada
     Given existe una habitación con número "101" en el sistema
     When intenta crear una habitación con los siguientes datos:
@@ -31,6 +33,7 @@ Feature: Gestión de habitaciones como administrador
     Then el sistema impide la creación
     And  muestra el mensaje "Habitación duplicada, cargue un nuevo número"
 
+  @HU05 @TC-05-010 @edge_case
   Scenario: Cambio de descripción en admin se refleja en la vista pública
     Given existe una habitación en el listado administrativo
     When edita la descripción de la habitación con el valor "Hola Mundo"
