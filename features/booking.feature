@@ -10,29 +10,24 @@ Feature: Reserva de habitación
   Scenario: Reserva exitosa con datos válidos
     When selecciona una habitación disponible
     And selecciona un rango de fechas de estadía válidas
-    And completa el formulario con los siguientes datos:
-      | Campo    | Valor              |
-      | Nombre   | Juan Garcia        |
-      | Apellido | Lopez              |
-      | Email    | juan@email.com     |
-      | Teléfono | 12345678901        |
+    And completa el formulario con datos de usuario "bookingGuestValid"
     And confirma la reserva
-    Then el sistema muestra confirmación observable de reserva exitosa
+    Then el sistema muestra confirmación "bookingConfirmed"
 
   @HU-01 @TC-01-011 @negative
   Scenario: Reserva rechazada por fechas pasadas
     Given hay una habitación disponible seleccionada
     When ingresa un rango de fechas pasadas a la actual
-    And completa el formulario con datos válidos
+    And completa el formulario con datos de usuario "bookingGuestValid"
     And intenta confirmar la reserva
     Then el sistema impide la creación de la reserva
-    And muestra el mensaje "Ingrese fechas válidas"
+    And muestra el mensaje "bookingInvalidDates"
 
   @HU-01 @TC-01-013 @negative
   Scenario: Reserva rechazada por conflicto de disponibilidad en fechas ocupadas
     Given existe una reserva previa en el rango de fechas a utilizar
     When selecciona la misma habitación con las mismas fechas ya ocupadas
-    And completa el formulario con datos válidos
+    And completa el formulario con datos de usuario "bookingGuestValid"
     And intenta confirmar la reserva
     Then el sistema impide la creación de la reserva
-    And muestra el mensaje "Fechas ocupadas, seleccione fechas disponibles"
+    And muestra el mensaje "bookingOccupiedDates"

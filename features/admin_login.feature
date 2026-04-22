@@ -8,10 +8,7 @@ Feature: Inicio y cierre de sesión administrador
 
   @HU-04 @TC-04-001 @happy_path
   Scenario: Login exitoso con credenciales válidas
-    When completa el formulario de login con:
-      | Campo      | Valor    |
-      | Usuario    | admin    |
-      | Contraseña | password |
+    When completa el formulario de login con datos de usuario "adminValid"
     And confirma el inicio de sesión
     Then el sistema concede acceso al área administrativa
     And el panel muestra las funciones disponibles
@@ -25,18 +22,15 @@ Feature: Inicio y cierre de sesión administrador
 
   @HU-04 @negative @TC-04-004 @TC-04-005 @TC-04-006 @TC-04-007 @TC-04-008
   Scenario Outline: Validaciones de login inválido
-    When completa el formulario de login con:
-      | Campo      | Valor        |
-      | Usuario    | <usuario>    |
-      | Contraseña | <contraseña> |
+    When completa el formulario de login con datos de usuario "<dataset_usuario>"
     And confirma el inicio de sesión
-    Then el sistema muestra el mensaje "<mensaje_error>"
+    Then el sistema muestra el mensaje con clave "<mensaje_error_clave>"
     And el sistema no concede acceso al área administrativa
 
-    Examples: Combinaciones inválidas de usuario y contraseña
-      | usuario            | contraseña | mensaje_error                |
-      | admin              | wrongpass  | Credenciales inválidas       |
-      | usuarioinexistente | password   | Credenciales inválidas       |
-      |                    |            | Ingrese usuario y contraseña |
-      |                    | password   | Ingrese usuario y contraseña |
-      | admin              |            | Ingrese usuario y contraseña |
+    Examples: Combinaciones inválidas por dataset
+      | dataset_usuario           | mensaje_error_clave      |
+      | adminInvalidWrongPassword | adminInvalidCredentials  |
+      | adminInvalidUnknownUser   | adminInvalidCredentials  |
+      | adminInvalidBothEmpty     | adminMissingCredentials  |
+      | adminInvalidUserEmpty     | adminMissingCredentials  |
+      | adminInvalidPasswordEmpty | adminMissingCredentials  |
