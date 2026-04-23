@@ -30,4 +30,4 @@ Feature: Reserva de habitación
     And completa el formulario con datos de usuario "bookingGuestValid"
     And intenta confirmar la reserva
     Then el sistema impide la creación de la reserva
-    And muestra el mensaje "bookingOccupiedDates"
+    And muestra el mensaje "bookingInvalidDates"

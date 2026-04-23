@@ -105,12 +105,7 @@ export class BookingPage extends BasePage {
   }
 
   async assertReservationBlocked() {
-    const modalOpen = await this.firstName().isVisible().catch(() => false);
-    const errorLocator = this.page.getByText(
-      /invalid|error|must be|required|valid|not available|occupied|conflict/i
-    );
-    const hasError = (await errorLocator.count()) > 0;
-    expect(modalOpen || hasError).toBeTruthy();
+    await expect(this.page.getByText(/Booking Denied/i).first()).toBeVisible();
   }
 
   async assertMessageByKey(messageKey) {
