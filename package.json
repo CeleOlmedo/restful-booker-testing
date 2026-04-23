@@ -5,11 +5,16 @@
   "type": "module",
   "scripts": {
     "test:ui": "cross-env DEBUG=pw:api HEADED=true cucumber-js --config cucumber.js",
-    "test:api": "cucumber-js --config cucumber.js api/**/*.feature"
+    "test:api": "cucumber-js --config cucumber.js api/**/*.feature",
+    "pretest:ui:report": "powershell -NoProfile -Command \"if (Test-Path './reports/cucumber-report.html') { Remove-Item './reports/cucumber-report.html' }\"",
+    "test:ui:report": "cross-env DEBUG=pw:api HEADED=true cucumber-js --config cucumber.js --format progress --format html:reports/cucumber-report.html",
+    "pretest:api:report": "powershell -NoProfile -Command \"if (Test-Path './reports/cucumber-report.html') { Remove-Item './reports/cucumber-report.html' }\"",
+    "test:api:report": "cucumber-js --config cucumber.js --format progress --format html:reports/cucumber-report.html api/**/*.feature"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11.2.0",
     "@playwright/test": "^1.53.0",
+    "axios": "^1.15.2",
     "cross-env": "^7.0.3"
   }
 }
