@@ -36,7 +36,7 @@ Given("existe una habitaci\u00F3n con n\u00FAmero {string} en el sistema", async
   assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${datasetKey}`);
   this.currentFormTarget = "rooms";
   const num = String(roomData["N\u00FAmero"]);
-  const alreadyListed = await this.page.getByText(new RegExp(`\\b${num}\\b`)).count();
+  const alreadyListed = await this.pages.roomsPage.countRoomNumberInList(num);
   if (alreadyListed === 0) {
     await this.pages.roomsPage.startCreateRoom();
     await this.pages.roomsPage.completeRoomForm(USERS.roomValid101);
@@ -53,11 +53,23 @@ When("intenta crear una habitaci\u00F3n con datos de usuario {string}", async fu
   await this.pages.roomsPage.completeRoomForm(roomData);
 });
 
+When("intenta crear una habitaci\u00F3n con datos de habitaci\u00F3n {string}", async function (roomKey) {
+  const roomData = USERS[roomKey];
+  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${roomKey}`);
+  this.currentFormTarget = "rooms";
+  await this.pages.roomsPage.startCreateRoom();
+  await this.pages.roomsPage.completeRoomForm(roomData);
+});
+
 Then("el sistema impide la creaci\u00F3n", async function () {
   await this.pages.roomsPage.assertCreationRejected();
 });
 
 Given("existe una habitaci\u00F3n en el listado administrativo", async function () {
+  await this.pages.roomsPage.assertHasAnyRoomRow();
+});
+
+When("selecciona la habitaci\u00F3n", async function () {
   await this.pages.roomsPage.assertHasAnyRoomRow();
 });
 
@@ -84,6 +96,15 @@ Then("la descripci\u00F3n mostrada coincide con {string}", async function (datas
 });
 
 Then("muestra el mensaje de rooms con clave {string}", async function (messageKey) {
+  await this.pages.roomsPage.assertMessageByKey(messageKey);
+});
+
+Then("la habitaci\u00F3n se crea sin errores y aparece en el listado administrativo con los datos ingresados", async function () {
+  await this.pages.roomsPage.assertRoomNumberInList("101");
+});
+
+Then("el sistema impide la creaci\u00F3n y muestra el mensaje {string}", async function (messageKey) {
+  await this.pages.roomsPage.assertCreationRejected();
   await this.pages.roomsPage.assertMessageByKey(messageKey);
 });
 

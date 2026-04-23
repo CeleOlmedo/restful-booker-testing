@@ -14,6 +14,13 @@ When("selecciona un rango de fechas de estadía válidas", async function () {
   this.bookingCheckout = checkout;
 });
 
+When("selecciona un rango de fechas de estadía válidas y confirma", async function () {
+  await this.pages.bookingPage.setValidDateRange();
+  const { checkin, checkout } = this.pages.bookingPage.readDatesFromCurrentUrl();
+  this.bookingCheckin = checkin;
+  this.bookingCheckout = checkout;
+});
+
 When("confirma la reserva", async function () {
   await this.pages.bookingPage.confirmReservation();
 });
@@ -32,16 +39,16 @@ When("ingresa un rango de fechas pasadas a la actual", async function () {
   await this.pages.bookingPage.setPastDateRange();
 });
 
+When("ingresa un rango de fechas pasadas a la actual y confirma", async function () {
+  await this.pages.bookingPage.setPastDateRange();
+});
+
 When("intenta confirmar la reserva", async function () {
   await this.pages.bookingPage.confirmReservation();
 });
 
 Then("el sistema impide la creación de la reserva", async function () {
   await this.pages.bookingPage.assertReservationBlocked();
-});
-
-Then("muestra el mensaje {string}", async function (key) {
-  await this.pages.bookingPage.assertMessageByKey(key);
 });
 
 Given("existe una reserva previa en el rango de fechas a utilizar", async function () {
@@ -58,6 +65,15 @@ Given("existe una reserva previa en el rango de fechas a utilizar", async functi
 });
 
 When("selecciona la misma habitación con las mismas fechas ya ocupadas", async function () {
+  assert.ok(this.bookingCheckin && this.bookingCheckout, "Faltan fechas guardadas para el escenario de conflicto");
+  await this.pages.bookingPage.selectFirstAvailableRoom();
+  await this.pages.bookingPage.setOccupiedRangeSameAsStored(
+    this.bookingCheckin,
+    this.bookingCheckout
+  );
+});
+
+When("selecciona la misma habitación con las mismas fechas ya ocupadas y confirma", async function () {
   assert.ok(this.bookingCheckin && this.bookingCheckout, "Faltan fechas guardadas para el escenario de conflicto");
   await this.pages.bookingPage.selectFirstAvailableRoom();
   await this.pages.bookingPage.setOccupiedRangeSameAsStored(

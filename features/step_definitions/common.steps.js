@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { Given, When } from "@cucumber/cucumber";
+import { Given, When, Then } from "@cucumber/cucumber";
 import USERS from "../../data/users.json" with { type: "json" };
 
 function tableToObject(dataTable) {
@@ -59,4 +59,30 @@ When("completa el formulario con datos de usuario {string}", async function (use
   }
 
   assert.fail("No se configuró un contexto de formulario para este paso.");
+});
+
+When("completa el formulario con datos de habitación {string}", async function (roomKey) {
+  const data = USERS[roomKey];
+  assert.ok(data, `No existe el dataset de habitación: ${roomKey}`);
+  this.currentFormTarget = "rooms";
+  await this.pages.roomsPage.completeRoomForm(data);
+});
+
+Then("muestra el mensaje {string}", async function (messageKey) {
+  if (this.currentFormTarget === "contact") {
+    await this.pages.contactPage.assertErrorByKey(messageKey);
+    return;
+  }
+
+  if (this.currentFormTarget === "booking") {
+    await this.pages.bookingPage.assertMessageByKey(messageKey);
+    return;
+  }
+
+  if (this.currentFormTarget === "rooms") {
+    await this.pages.roomsPage.assertMessageByKey(messageKey);
+    return;
+  }
+
+  assert.fail("No se configuró un contexto para validar mensajes.");
 });
