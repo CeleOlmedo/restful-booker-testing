@@ -36,14 +36,8 @@ export class ContactPage extends BasePage {
   }
 
   async assertSubmissionSuccess() {
-    const pattern = MESSAGES.contactSuccess;
-    const successLine = this.section().getByText(pattern).first();
-    if ((await successLine.count()) > 0) {
-      await expect(successLine).toBeVisible();
-      return;
-    }
-    await expect(this.nameInput()).toHaveValue("");
-    await expect(this.emailInput()).toHaveValue("");
+    const successHeading = this.section().locator("h3").filter({ hasText: /Thanks for getting in touch/ });
+    await expect(successHeading).toBeVisible();
   }
 
   async assertSubmissionBlocked() {
