@@ -55,6 +55,10 @@ export class RoomsAdminPage extends BasePage {
     await expect(this.page.getByText(new RegExp(`\\b${number}\\b`)).first()).toBeVisible();
   }
 
+  async countRoomNumberInList(number) {
+    return this.page.getByText(new RegExp(`\\b${number}\\b`)).count();
+  }
+
   async assertMessageByKey(messageKey) {
     const pattern = MESSAGES[messageKey];
     expect(pattern, `Sin mensaje para clave: ${messageKey}`).toBeTruthy();

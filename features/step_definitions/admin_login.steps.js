@@ -53,12 +53,20 @@ Then("el sistema cierra la sesión correctamente", async function () {
   await this.pages.adminPage.assertLoginFormVisible();
 });
 
+Then("el sistema cierra la sesión correctamente y vuelve a la pantalla de inicio", async function () {
+  await this.pages.adminPage.assertLoginFormVisible();
+});
+
 Then("el acceso a los módulos administrativos queda bloqueado", async function () {
   await this.pages.adminPage.openAdminPanel();
   await this.pages.adminPage.assertLoginFormVisible();
 });
 
 Then("el sistema muestra el mensaje con clave {string}", async function (messageKey) {
+  await this.pages.adminPage.assertMessageByKey(messageKey);
+});
+
+Then("el sistema muestra el mensaje {string}", async function (messageKey) {
   await this.pages.adminPage.assertMessageByKey(messageKey);
 });
 
