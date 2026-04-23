@@ -19,7 +19,7 @@ Feature: Gestión de habitaciones como administrador
     And  confirma la creación
     Then el sistema impide la creación y muestra el mensaje "roomDuplicate"
 
-  @HU05 @TC-05-010 @edge_case
+  @HU05 @TC-05-010 @happy_path
   Scenario: Cambio de descripción en admin se refleja en la vista pública
     Given existe una habitación en el listado administrativo
     When selecciona la habitación
