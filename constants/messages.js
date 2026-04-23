@@ -4,8 +4,7 @@
  */
 export const MESSAGES = {
   bookingConfirmed: /Booking Confirmed/i,
-  bookingInvalidDates: /valid|past|before|invalid|date|check.?in/i,
-  bookingOccupiedDates: /not available|unavailable|occupied|conflict|already|booked/i,
+  bookingInvalidDates: /Booking Denied/i,
 
   contactSuccess: /Thank you|success|sent|submitted/i,
   invalidEmailHint: /well-formed email|valid email/i,
