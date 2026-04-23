@@ -50,11 +50,11 @@ When("ejecuta el cierre de sesión", async function () {
 });
 
 Then("el sistema cierra la sesión correctamente", async function () {
-  await this.pages.adminPage.assertLoginFormVisible();
+  await this.pages.homePage.assertLoaded();
 });
 
 Then("el sistema cierra la sesión correctamente y vuelve a la pantalla de inicio", async function () {
-  await this.pages.adminPage.assertLoginFormVisible();
+  await this.pages.homePage.assertLoaded();
 });
 
 Then("el acceso a los módulos administrativos queda bloqueado", async function () {

@@ -13,8 +13,12 @@ export class AdminPage extends BasePage {
   loginButton = () =>
     this.page.locator("#doLogin").or(this.page.getByRole("button", { name: /login|sign in/i })).first();
 
+  /** El demo no usa `#logout`; es un botón con texto "Logout" y redirige al sitio público. */
   logoutButton = () =>
-    this.page.locator("#logout").or(this.page.getByRole("button", { name: /logout|sign out/i })).first();
+    this.page
+      .getByRole("button", { name: /^logout$/i })
+      .or(this.page.getByRole("link", { name: /logout|sign out/i }))
+      .first();
 
   async openAdminPanel() {
     await this.goto(URLS.admin);
@@ -49,9 +53,15 @@ export class AdminPage extends BasePage {
   }
 
   async logout() {
-    await expect(this.logoutButton()).toBeVisible();
-    await this.logoutButton().click();
-    await this.assertLoginFormVisible();
+    const btn = this.logoutButton();
+    await expect(btn).toBeVisible();
+    await Promise.all([
+      this.page.waitForURL(
+        (url) => !/\/admin(\/|$)/i.test(url.pathname),
+        { timeout: 20_000 }
+      ),
+      btn.click(),
+    ]);
   }
 
   async navigateToRooms() {
