@@ -1,9 +1,4 @@
-import {
-  BeforeAll,
-  AfterAll,
-  Before,
-  After,
-  Status,
+import { BeforeAll, AfterAll, Before, After, Status,
 } from "@cucumber/cucumber";
 import { chromium } from "playwright";
 import { HomePage } from "../../pages/HomePage.js";
@@ -11,6 +6,20 @@ import { ContactPage } from "../../pages/ContactPage.js";
 import { BookingPage } from "../../pages/BookingPage.js";
 import { AdminPage } from "../../pages/AdminPage.js";
 import { RoomsAdminPage } from "../../pages/RoomsAdminPage.js";
+
+function registerNetworkDiagnostics(world) {
+  world.httpLogLines = [];
+
+  const push = (line) => world.httpLogLines.push(line);
+
+  world.page.on("request", (req) => {
+    push(`REQ ${req.method()} ${req.url()}`);
+  });
+
+  world.page.on("response", (res) => {
+    push(`RES ${res.status()} ${res.url()}`);
+  });
+}
 
 let globalBrowser;
 
@@ -26,6 +35,7 @@ Before(async function () {
   this.browser = globalBrowser;
   this.context = await this.browser.newContext();
   this.page = await this.context.newPage();
+  registerNetworkDiagnostics(this);
 
   this.pages.homePage = new HomePage(this.page);
   this.pages.contactPage = new ContactPage(this.page);
@@ -36,12 +46,18 @@ Before(async function () {
 
 After(async function (scenario) {
   try {
-    const isFailed = scenario.result?.status === Status.FAILED;
-    const hasEvidenceTag = (scenario.pickle?.tags ?? []).some(
-      (tag) => tag.name === "@happy_path"
-    );
+    const failed = scenario.result?.status === Status.FAILED;
 
-    if ((isFailed || hasEvidenceTag) && this.page) {
+    const mode = (process.env.HTTP_LOGS ?? "failed").toLowerCase();
+    // mode: "failed" | "always"
+    const shouldAttachHttpLogs = mode === "always" || (mode === "failed" && failed);
+    
+    const httpText = (this.httpLogLines ?? []).join("\n");
+    if (shouldAttachHttpLogs && httpText && typeof this.attach === "function") {
+      await this.attach(httpText, "text/plain");
+    }
+
+    if (scenario.result?.status === Status.FAILED && this.page) {
       const png = await this.page.screenshot({ fullPage: true });
       if (typeof this.attach === "function") {
         await this.attach(png, "image/png");
