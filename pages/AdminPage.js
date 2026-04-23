@@ -55,9 +55,15 @@ export class AdminPage extends BasePage {
   }
 
   async navigateToRooms() {
-    const link = this.page.getByRole("link", { name: /^Rooms$/i }).first();
-    await expect(link).toBeVisible();
-    await link.click();
-    await expect(this.page.locator("#roomName").or(this.page.getByRole("heading", { name: /room/i }))).first().toBeVisible();
+    const link = this.page.getByRole('link', { name: 'Rooms' });
+    await expect(link).toBeVisible();  
+    await link.click(); 
+    await expect(
+      this.page
+        .locator('#roomName')
+        .or(this.page.getByRole('heading', { name: /room/i }))
+        .first()
+    ).toBeVisible();
   }
+   
 }

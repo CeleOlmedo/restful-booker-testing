@@ -36,7 +36,12 @@ Before(async function () {
 
 After(async function (scenario) {
   try {
-    if (scenario.result?.status === Status.FAILED && this.page) {
+    const isFailed = scenario.result?.status === Status.FAILED;
+    const hasEvidenceTag = (scenario.pickle?.tags ?? []).some(
+      (tag) => tag.name === "@happy_path"
+    );
+
+    if ((isFailed || hasEvidenceTag) && this.page) {
       const png = await this.page.screenshot({ fullPage: true });
       if (typeof this.attach === "function") {
         await this.attach(png, "image/png");

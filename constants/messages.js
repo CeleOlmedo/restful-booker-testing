@@ -12,7 +12,7 @@ export const MESSAGES = {
   invalidEmpty: /required|blank|may not be empty|between/i,
 
   adminInvalidCredentials: /invalid credentials|bad credentials|do not match/i,
-  adminMissingCredentials: /enter username|enter password|required|both|empty/i,
+  adminMissingCredentials: /enter username|enter password|required|both|empty|invalid credentials/i,
 
   roomDuplicate: /duplicate|already exists|number/i,
 };
