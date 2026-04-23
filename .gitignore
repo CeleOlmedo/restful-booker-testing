@@ -3,3 +3,4 @@ npm-debug.log*
 
 reports/screenshots/*.png
 !reports/screenshots/.gitkeep
+reports/
