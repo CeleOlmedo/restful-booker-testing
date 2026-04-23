@@ -70,7 +70,7 @@ Given("existe una habitaci\u00F3n en el listado administrativo", async function 
 });
 
 When("selecciona la habitaci\u00F3n", async function () {
-  await this.pages.roomsPage.assertHasAnyRoomRow();
+  await this.pages.roomsPage.selectFirstRoom();
 });
 
 When("edita la descripci\u00F3n de la habitaci\u00F3n con datos de usuario {string}", async function (userKey) {
@@ -104,6 +104,10 @@ Then("la habitaci\u00F3n se crea sin errores y aparece en el listado administrat
 });
 
 Then("el sistema impide la creaci\u00F3n y muestra el mensaje {string}", async function (messageKey) {
+  if (messageKey === "roomDuplicate") {
+    await this.pages.roomsPage.assertDuplicateRoomOutcome(messageKey, "101");
+    return;
+  }
   await this.pages.roomsPage.assertCreationRejected();
   await this.pages.roomsPage.assertMessageByKey(messageKey);
 });
