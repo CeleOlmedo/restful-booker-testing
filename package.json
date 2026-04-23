@@ -4,9 +4,8 @@
   "description": "UI automation with Cucumber + Playwright using POM",
   "type": "module",
   "scripts": {
-    "test:ui": "cross-env DEBUG=pw:api cucumber-js --config cucumber.js",
-    "test:ui:headed": "cross-env DEBUG=pw:api HEADED=true cucumber-js --config cucumber.js",
-    "test:ui:contact": "cross-env DEBUG=pw:api cucumber-js --config cucumber.js --tags \"@ui and @contact\""
+    "test:ui": "cross-env DEBUG=pw:api HEADED=true cucumber-js --config cucumber.js",
+    "test:api": "cucumber-js --config cucumber.js api/**/*.feature"
   },
   "devDependencies": {
     "@cucumber/cucumber": "^11.2.0",
