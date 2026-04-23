@@ -1,6 +1,6 @@
 export default {
   default: {
-    paths: ["features/**/*.feature"],
+    paths: ["features/**/*.feature", "api/**/*.feature"],
     import: [
       "features/support/world.js",
       "features/support/hooks.js",
