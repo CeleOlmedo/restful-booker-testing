@@ -14,5 +14,6 @@ export const MESSAGES = {
   adminInvalidCredentials: /invalid credentials|bad credentials|do not match/i,
   adminMissingCredentials: /enter username|enter password|required|both|empty|invalid credentials/i,
 
-  roomDuplicate: /duplicate|already exists|number/i,
+  roomDuplicate:
+    /duplicate|already\s+exists|already\s+in\s+use|unique|taken|conflict|could\s+not|bad\s+request/i,
 };

@@ -65,6 +65,6 @@
     "Room Details": "Wifi, TV, Radio"
   },
   "roomDescriptionHolaMundo": {
-    "descripcion": "Hola Mundo"
+    "descripcion": "Hola Mundo — descripcion de prueba automatizada para validar la vista publica de la habitacion."
   }
 }
