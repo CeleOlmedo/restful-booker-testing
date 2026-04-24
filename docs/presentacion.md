@@ -6,7 +6,7 @@
 
 **Sugerencia de duración:** 12–20 minutos + preguntas.
 
-> **Cómo usar este documento:** cada integrante tiene su “partecita”. Las **Preguntas guía** sirven para profundicen o responan en el Q&A.
+> **Cómo usar este documento:** cada integrante tiene su “partecita”. Las **Preguntas guía** son guía para profundizar o responder en el Q&A.
 
 ---
 

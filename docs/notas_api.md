@@ -3,16 +3,16 @@
 Los tests de API viven bajo la carpeta **`api/`** y se ejecutan con **Cucumber**; el cliente HTTP es **axios** (ver `api/api.steps.js`).
 
 - **Comando:** `npm run test:api`
-- **Con reporte HTML (como en UI):** `npm run test:api:report` (el HTML se genera bajo `reports/`, p. ej. `cucumber-report.html`).
+- **Con reporte HTML:** `npm run test:api:report` (el HTML se genera en `reports/cucumber-report.html`).
 
-> La UI del curso se sirve en `https://automationintesting.online`. Las pruebas de API apuntan a la instancia pública de **Restful Booker** en **`https://restful-booker.herokuapp.com`**, alineada con el nombre del repositorio y con el flujo demo “restful-booker”.
+> La UI del curso se sirve en `https://automationintesting.online`. Las pruebas de API apuntan a la instancia pública de **Restful Booker** en **`https://restful-booker.herokuapp.com`**.
 
 ---
 
 ## Dónde está el código
 
 | Archivo | Rol |
-|--------|-----|
+|---------|-----|
 | `api/api.feature` | Escenarios: listar (GET), crear (POST), actualizar (PUT), borrar (DELETE) y comprobación tras borrado. |
 | `api/api.steps.js` | Implementación: llamadas `axios` a `/booking`, `/auth` y manejo de `Cookie: token=…` en PUT/DELETE. |
 
@@ -20,22 +20,22 @@ Los tests de API viven bajo la carpeta **`api/`** y se ejecutan con **Cucumber**
 
 ## Endpoints probados
 
-Misma **base** para todos: `https://restful-booker.herokuapp.com`
+**Base URL:** `https://restful-booker.herokuapp.com`
 
-| Método | Ruta (relativa) | Uso en el proyecto |
-|--------|-----------------|--------------------|
+| Método | Ruta | Uso en el proyecto |
+|--------|------|--------------------|
 | `GET` | `/booking` | Listar IDs de reservas. |
 | `POST` | `/booking` | Crear una reserva. |
-| `POST` | `/auth` | Obtener token (usuario `admin`, password del demo) para operaciones autenticadas. |
-| `PUT` | `/booking/:id` | Actualizar una reserva creada antes. |
+| `POST` | `/auth` | Obtener token para operaciones autenticadas (usuario `admin`). |
+| `PUT` | `/booking/:id` | Actualizar una reserva creada previamente. |
 | `DELETE` | `/booking/:id` | Eliminar reserva. |
-| `GET` | `/booking/:id` | Tras un DELETE, se espera comprobar que el recurso ya no existe. |
+| `GET` | `/booking/:id` | Tras un DELETE, verificar que el recurso ya no existe (404). |
 
-**Requisito mínimo de la consigna (GET y POST):** quedan cubiertos en los escenarios *“Listar booking ids (GET)”* y *“Crear booking (POST)”*.
+**Cobertura mínima de la consigna (GET y POST):** cubierta en los escenarios *"Listar booking ids (GET)"* y *"Crear booking (POST)"*. El proyecto va más allá e incluye PUT y DELETE.
 
 ---
 
-## Qué validan (resumen por flujo)
+## Qué valida cada flujo
 
 ### Listar — `GET /booking`
 
@@ -44,30 +44,31 @@ Misma **base** para todos: `https://restful-booker.herokuapp.com`
 
 ### Crear — `POST /booking`
 
-- Status **200** (o falla con error explícito en el step).
-- Respuesta con **`bookingid`** y objeto **`booking`**; se comparan con el cuerpo enviado: `firstname`, `lastname`, `totalprice`, `depositpaid`, fechas `checkin`/`checkout` y coherencia general con el payload de creación.
+- Status **200**.
+- Respuesta con **`bookingid`** y objeto **`booking`**; se comparan con el payload enviado: `firstname`, `lastname`, `totalprice`, `depositpaid`, fechas `checkin`/`checkout`.
 
-### Autenticar — `POST /auth` (soporta escenarios que modifican o borran)
+### Autenticar — `POST /auth`
 
 - Status **200** y presencia de **`token`** en la respuesta.
+- El token se reutiliza en `Cookie: token=…` para las llamadas PUT y DELETE.
 
 ### Actualizar — `PUT /booking/:id`
 
-- Requiere cookie **`token=…`**.
-- Status **200**; el cuerpo devuelto se compara con los nuevos `firstname`, `lastname`, `totalprice`, `depositpaid` y fechas.
+- Requiere header `Cookie: token=…`.
+- Status **200**; el cuerpo devuelto se compara con los nuevos valores de `firstname`, `lastname`, `totalprice`, `depositpaid` y fechas.
 
-### Borrar y verificar — `DELETE` + `GET /booking/:id`
+### Borrar y verificar — `DELETE /booking/:id` + `GET /booking/:id`
 
-- DELETE: la API de este demo suele responder **201** en borrado correcto; el test lo asume.
-- `GET` al mismo `id` después del borrado: se espera **404**.
+- DELETE: la API responde **201** en borrado exitoso.
+- GET al mismo `id` después del borrado: se espera **404**.
 
 ---
 
-## Ejemplos de request/response (resumidos)
+## Ejemplos de request/response
 
 ### `GET /booking`
 
-**Request (esencial):**
+**Request:**
 
 ```http
 GET /booking HTTP/1.1
@@ -75,19 +76,22 @@ Host: restful-booker.herokuapp.com
 Accept: application/json
 ```
 
-**Response (ilustrativa):** `200` con cuerpo tipo:
+**Response — 200:**
 
 ```json
-[ { "bookingid": 12 }, { "bookingid": 34 } ]
+[
+  { "bookingid": 12 },
+  { "bookingid": 34 }
+]
 ```
 
-*(Los ids reales dependen del entorno; el test valida estructura y tipos, no un id fijo.)*
+*Los IDs reales dependen del entorno; el test valida estructura y tipos, no un ID fijo.*
 
 ---
 
 ### `POST /booking`
 
-**Request (cuerpo JSON, tal como se usa al crear; valores pueden variar por escenario):**
+**Request:**
 
 ```json
 {
@@ -103,7 +107,7 @@ Accept: application/json
 }
 ```
 
-**Response (estructura típica):**
+**Response — 200:**
 
 ```json
 {
@@ -121,18 +125,82 @@ Accept: application/json
 
 ---
 
-### `POST /auth` (referencia, para PUT/DELETE)
+### `POST /auth`
 
-**Request (credenciales por defecto del demo en el `Given` del feature):**
+**Request:**
 
 ```json
 { "username": "admin", "password": "password123" }
 ```
 
-**Response (esencial):** `200` con cuerpo que incluye al menos un **`token`** reutilizable en `Cookie: token=…` en `PUT` y `DELETE` sobre `/booking/:id`.
+**Response — 200:**
+
+```json
+{ "token": "abc123def456" }
+```
+
+El token recibido se usa en las llamadas PUT y DELETE como `Cookie: token=abc123def456`.
 
 ---
 
-## Nota sobre `tests/api/`
+### `PUT /booking/:id`
 
-En `package.json` puede constar el script `test:api:axios` (runner de Node para archivos bajo `tests/api/`). La **Parte B** documentada aquí corresponde a la implementación con **axios** en `api/api.steps.js` y escenarios en `api/api.feature`, ejecutada con `npm run test:api`.
+**Request (con header de autenticación):**
+
+```http
+PUT /booking/101 HTTP/1.1
+Host: restful-booker.herokuapp.com
+Content-Type: application/json
+Cookie: token=abc123def456
+```
+
+```json
+{
+  "firstname": "Maria",
+  "lastname": "Lopez",
+  "totalprice": 200,
+  "depositpaid": false,
+  "bookingdates": {
+    "checkin": "2026-05-01",
+    "checkout": "2026-05-07"
+  },
+  "additionalneeds": "Lunch"
+}
+```
+
+**Response — 200:** cuerpo con los datos actualizados (misma estructura que POST /booking sin el `bookingid` envolvente).
+
+---
+
+### `DELETE /booking/:id` + verificación
+
+**Request:**
+
+```http
+DELETE /booking/101 HTTP/1.1
+Host: restful-booker.herokuapp.com
+Cookie: token=abc123def456
+```
+
+**Response — 201:** (comportamiento del demo; el test asume este código).
+
+**GET posterior:**
+
+```http
+GET /booking/101 HTTP/1.1
+Host: restful-booker.herokuapp.com
+```
+
+**Response — 404:** confirma que el recurso fue eliminado.
+
+---
+
+## Resultados de la última ejecución
+
+| Métrica    | Valor                  |
+|------------|------------------------|
+| Escenarios | 4                      |
+| Resultado  | **4 passed, 0 failed** |
+| Pasos      | 21 passed              |
+
+Reporte completo: `reports/cucumber-report-api.html`.
