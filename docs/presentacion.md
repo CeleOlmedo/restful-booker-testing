@@ -106,38 +106,11 @@ Estos casos están trazados a los escenarios de `features/contact.feature` media
 
 ---
 
-## Martín Cabrera — Azure DevOps, repositorio y TC-05
+## Martín Cabrera — Azure DevOps y TC-05
 
 ### Azure DevOps — Test Plans
 
 En Azure DevOps se configuró un Test Plan con Test Suites por módulo (Booking, Contact, Rooms Admin). Se cargaron los casos de prueba principales con sus pasos y resultados esperados, y se vincularon a las User Stories correspondientes como Work Items. La evidencia (capturas del plan, suites, casos y vínculos) está disponible en `docs/azure_test_plans.md` y `docs/Screenshots/`.
-
-### Repositorio
-
-Estructura del proyecto:
-
-```
-restful-booker-testing/
-├── features/           # Escenarios Gherkin y step definitions
-│   ├── step_definitions/
-│   └── support/        # Hooks y World
-├── pages/              # Page Objects (POM)
-├── api/                # Tests de API (feature + steps)
-├── constants/          # URLs, mensajes, selectores compartidos
-├── data/               # Datos de prueba (users.json)
-├── docs/               # Documentación del proyecto
-└── reports/            # Reportes HTML generados
-```
-
-**Instalación y ejecución:**
-
-```bash
-npm install
-npx playwright install
-
-npm run test:ui:report    # Suite UI con reporte HTML
-npm run test:api:report   # Suite API con reporte HTML
-```
 
 ### Casos de prueba — TC-05 (módulo Rooms Admin / HU-05)
 
