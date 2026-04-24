@@ -39,9 +39,10 @@ Given("existe una habitaci\u00F3n con n\u00FAmero {string} en el sistema", async
   const alreadyListed = await this.pages.roomsPage.countRoomNumberInList(num);
   if (alreadyListed === 0) {
     await this.pages.roomsPage.startCreateRoom();
-    await this.pages.roomsPage.completeRoomForm(USERS.roomValid101);
+    await this.pages.roomsPage.completeRoomForm(roomData);
     await this.pages.roomsPage.submitRoomCreation();
   }
+  this.duplicateScenarioRoomNumber = num;
   await this.pages.roomsPage.assertRoomNumberInList(num);
 });
 
@@ -57,6 +58,12 @@ When("intenta crear una habitaci\u00F3n con datos de habitaci\u00F3n {string}", 
   const roomData = USERS[roomKey];
   assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${roomKey}`);
   this.currentFormTarget = "rooms";
+  if (roomData["N\u00FAmero"] !== undefined) {
+    this.duplicateScenarioRoomNumber = String(roomData["N\u00FAmero"]);
+    this.duplicateListCountBeforeConfirm = await this.pages.roomsPage.countRoomNumberInList(
+      this.duplicateScenarioRoomNumber
+    );
+  }
   await this.pages.roomsPage.startCreateRoom();
   await this.pages.roomsPage.completeRoomForm(roomData);
 });
@@ -66,6 +73,19 @@ Then("el sistema impide la creaci\u00F3n", async function () {
 });
 
 Given("existe una habitaci\u00F3n en el listado administrativo", async function () {
+  this.currentFormTarget = "rooms";
+  let n = await this.pages.roomsPage.roomListingRows().count();
+  if (n === 0) {
+    await this.pages.roomsPage.startCreateRoom();
+    await this.pages.roomsPage.completeRoomForm(USERS.roomValid101);
+    await this.pages.roomsPage.submitRoomCreation();
+    n = await this.pages.roomsPage.roomListingRows().count();
+  }
+  if (n < 2) {
+    await this.pages.roomsPage.startCreateRoom();
+    await this.pages.roomsPage.completeRoomForm(USERS.roomValid102);
+    await this.pages.roomsPage.submitRoomCreation();
+  }
   await this.pages.roomsPage.assertHasAnyRoomRow();
 });
 
@@ -105,7 +125,12 @@ Then("la habitaci\u00F3n se crea sin errores y aparece en el listado administrat
 
 Then("el sistema impide la creaci\u00F3n y muestra el mensaje {string}", async function (messageKey) {
   if (messageKey === "roomDuplicate") {
-    await this.pages.roomsPage.assertDuplicateRoomOutcome(messageKey, "101");
+    const num = this.duplicateScenarioRoomNumber ?? "101";
+    await this.pages.roomsPage.assertDuplicateRoomOutcome(
+      messageKey,
+      num,
+      this.duplicateListCountBeforeConfirm
+    );
     return;
   }
   await this.pages.roomsPage.assertCreationRejected();

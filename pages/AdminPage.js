@@ -13,7 +13,6 @@ export class AdminPage extends BasePage {
   loginButton = () =>
     this.page.locator("#doLogin").or(this.page.getByRole("button", { name: /login|sign in/i })).first();
 
-  /** El demo no usa `#logout`; es un botón con texto "Logout" y redirige al sitio público. */
   logoutButton = () =>
     this.page
       .getByRole("button", { name: /^logout$/i })
@@ -56,22 +55,19 @@ export class AdminPage extends BasePage {
     const btn = this.logoutButton();
     await expect(btn).toBeVisible();
     await Promise.all([
-      this.page.waitForURL(
-        (url) => !/\/admin(\/|$)/i.test(url.pathname),
-        { timeout: 20_000 }
-      ),
+      this.page.waitForURL((url) => !/\/admin(\/|$)/i.test(url.pathname)),
       btn.click(),
     ]);
   }
 
   async navigateToRooms() {
-    const link = this.page.getByRole('link', { name: 'Rooms' });
-    await expect(link).toBeVisible();  
-    await link.click(); 
+    const link = this.page.getByRole("link", { name: "Rooms" });
+    await expect(link).toBeVisible();
+    await link.click();
     await expect(
       this.page
-        .locator('#roomName')
-        .or(this.page.getByRole('heading', { name: /room/i }))
+        .locator("#roomName")
+        .or(this.page.getByRole("heading", { name: /room/i }))
         .first()
     ).toBeVisible();
   }
