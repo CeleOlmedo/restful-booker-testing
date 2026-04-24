@@ -54,7 +54,7 @@ Then("el sistema impide la creación de la reserva", async function () {
 Given("existe una reserva previa en el rango de fechas a utilizar",{timeout:120000}, async function () {
   this.currentFormTarget = "booking";
   await this.pages.bookingPage.selectFirstAvailableRoom();
-  await this.pages.bookingPage.setValidDateRange();
+  await this.pages.bookingPage.setConflictDateRange();
   const { checkin, checkout } = this.pages.bookingPage.readDatesFromCurrentUrl();
   this.bookingCheckin = checkin;
   this.bookingCheckout = checkout;

@@ -47,15 +47,23 @@ export class BookingPage extends BasePage {
 
   async setValidDateRange() {
     const roomId = this.roomIdFromUrl();
-    const checkin = this.isoAddDays(new Date(), 45);
-    const checkout = this.isoAddDays(new Date(), 47);
+    const checkin = this.isoAddDays(new Date(), 20);
+    const checkout = this.isoAddDays(new Date(), 22);
+    await this.goto(reservationUrl(roomId, checkin, checkout));
+    await expect(this.reserveNowFirst()).toBeVisible();
+  }
+
+  async setConflictDateRange() {
+    const roomId = this.roomIdFromUrl();
+    const checkin = this.isoAddDays(new Date(), 10);
+    const checkout = this.isoAddDays(new Date(), 12);
     await this.goto(reservationUrl(roomId, checkin, checkout));
     await expect(this.reserveNowFirst()).toBeVisible();
   }
 
   async setPastDateRange() {
     const roomId = this.roomIdFromUrl();
-    await this.goto(reservationUrl(roomId, "2020-01-01", "2020-01-02"));
+    await this.goto(reservationUrl(roomId, "2026-04-12", "2026-04-14"));
     await expect(this.reserveNowFirst()).toBeVisible();
   }
 
