@@ -286,4 +286,12 @@ export class RoomsAdminPage extends BasePage {
       )
       .toContain(text);
   }
+
+  async assertPublicReservationDescriptionVisible(text) {
+    await expect(this.page).toHaveURL(/\/reservation\/\d+/);
+  
+    // Si el texto es largo y puede partirse en nodos, regex suele ser más estable que exact:true
+    const escaped = String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    await expect(this.page.getByText(new RegExp(escaped, "i")).first()).toBeVisible();
+  }
 }
