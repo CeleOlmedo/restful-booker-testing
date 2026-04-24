@@ -56,7 +56,8 @@ npx playwright install
 Los escenarios viven en `features/**/*.feature` y se ejecutan con Playwright vía Cucumber. El script por defecto levanta el navegador en modo **headed** (`HEADED=true`) y activa trazas `DEBUG=pw:api`.
 
 ```bash
-npm run test:ui
+npm run test:ui:report    # Suite UI con reporte HTML
+npm run test:api:report   # Suite API con reporte HTML
 ```
 
 Variables útiles (opcional, ver `features/support/hooks.js`):
@@ -134,6 +135,5 @@ restful-booker-testing/
 | Celeste Olmedo | Academia C&S |
 | Noelia Mustaff | Academia C&S |
 | Martin Cabrera | Academia C&S |
-| Agustin Quintana | Academia C&S |
 
 ---
