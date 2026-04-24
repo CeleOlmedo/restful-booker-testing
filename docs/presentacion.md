@@ -1,319 +1,251 @@
 # Guión de presentación — Proyecto Restful Booker Testing
 
-**Aplicación objetivo:** [Restful Booker Platform](https://automationintesting.online/) (demo pública)  
-**Equipo (3) — orden de intervención sugerido:** **Noelia Mustaff** → **Celeste Olmedo** → **Martín Cabrera** (Academia C&S)  
-**Stack resumido:** Playwright + Cucumber (BDD, UI), Axios (API), POM, reportes HTML de Cucumber.
-
-**Sugerencia de duración:** 12–20 minutos + preguntas.
-
-> **Cómo usar este documento:** cada integrante tiene su “partecita”. Las **Preguntas guía** son guía para profundizar o responder en el Q&A.
+**Aplicación objetivo:** [Restful Booker Platform](https://automationintesting.online/)
+**Equipo:** Noelia Mustaff · Celeste Olmedo · Martín Cabrera (Academia C&S)
+**Stack:** Playwright + Cucumber (BDD, UI) · Axios (API) · POM · Reportes HTML de Cucumber
 
 ---
 
-## Reparto de casos de prueba (explicación en vivo)
+## Reparto general
 
-| Orden en vivo | Casos | Explica | Tema (HU) |
-|--------------|--------|---------|-----------|
-| 1 | **TC-01-xxx** (Booking / reserva) | **Noelia Mustaff** | HU-01 y flujo F-01 |
-| 2 | **TC-03-xxx** (Contacto) | **Celeste Olmedo** | HU-03 y flujo F-03 |
-| 3 | **TC-05-xxx** (Rooms / admin) | **Martín Cabrera** | HU-05 y flujo F-05 |
-
-*Los TC-04, API, etc. pueden mencionarse al repasar la suite en general (Bloque B) o al mostrar Gherkin.*
-
----
-
-# Parte A — Análisis, planificación y trazabilidad a la automatización
-
-Resumen de lo del **día de análisis** como puente a **features y Gherkin** del día siguiente.
-
-| Orden en vivo | Integrante     | Secciones que cubre |
-|---------------|----------------|----------------------|
-| A – 1         | **Noelia Mustaff**  | A.1 + A.2 + explicación **TC-01** (HU-01) |
-| A – 2         | **Celeste Olmedo**  | A.6 + A.7 + A.8 + A.9 + explicación **TC-03** (HU-03) + DevOps / Azure (plan completo) |
-| A – 3         | **Martín Cabrera**  | A.3 + A.4 + A.5 + explicación **TC-05** (HU-05) |
+| Parte | Integrante | Temas |
+|-------|------------|-------|
+| A – 1 | **Noelia Mustaff** | Introducción · Análisis de la aplicación · Estrategia · TC-01 |
+| A – 2 | **Celeste Olmedo** | Historias de Usuario · Casos de prueba · Tipos de prueba · TC-03 |
+| A – 3 | **Martín Cabrera** | Azure DevOps · Repositorio · TC-05 |
+| B – 1 | **Noelia Mustaff** | POM · Selectores · Pages |
+| B – 2 | **Celeste Olmedo** | Cucumber · Features · Steps |
+| B – 3 | **Martín Cabrera** | API · Reportes · Cierre |
 
 ---
 
-## Parte A — Noelia Mustaff (A.1, A.2 y TC-01 / HU-01) — *intervención 1*
-
-### A.1 Entender la aplicación y definir una estrategia QA simple y efectiva
-
-- Revisión del propósito del producto: reservas, disponibilidad, contacto, panel administrador (habitaciones, sesión).
-- Criterio de “simple y efectivo”: pocos flujos bien elegidos, criterios observables, trazabilidad clara (historia → casos → Gherkin → ejecución).
-
-### A.2 Exploración guiada de la app
-
-- Recorrido acordado: home → listado de habitaciones → reserva y validaciones → contacto → login admin → gestión de habitaciones.
-- Registro de comportamiento real (mensajes, límites, errores) sin asumir reglas no verificadas en la demo compartida.
-
-### Explicación de **TC-01** (casos de prueba — módulo Booking, `docs/casos_de_prueba.md`)
-
-*Defendés en voz alto los **casos TC-01-xxx** vinculados a **HU-01 | Reserva** y a la feature `booking.feature` (trazabilidad con `@TC-01-...`).*
-
-**HU-01 (recordatorio RNF para la mesa de análisis)**
-
-- **Como** huésped del hotel  
-- **Quiero** reservar una habitación seleccionando fechas y completando mis datos  
-- **Para** asegurar mi estadía y saber si la reserva fue aceptada o rechazada  
-
-*Detalle de criterios: ver `docs/historias_de_usuario.md`.*
-
-| ID | Título | Precondiciones (resumido) | Tipo / idea |
-|----|--------|---------------------------|------------|
-| TC-01-001 | Reserva exitosa | App OK; habitación disponible en el rango | Happy path — base del escenario Gherkin principal |
-| TC-01-012 | Reserva con fechas pasadas | Mismo contexto, fechas en el pasado | Negative — valida mensaje “Ingrese fechas válidas” (o equivalente) |
-| TC-01-013 | Reserva en fechas ya ocupadas | Existe reserva previa en el rango | Negative — conflicto de disponibilidad, mensaje acorde |
-
-> En la charla, enlazá cada TC con un **escenario** o tag en `features/booking.feature` y, si aplica, con pruebas **API** sobre reservas.
-
-### Preguntas guía — Noelia (A)
-
-1. Qué módulo les sorprendió más al explorar y qué riesgo de negocio viste en **reservas**.
-2. Diferencia entre lo que “suponían” y lo que la demo realmente hacía (fechas, validaciones).
-3. Por qué con **pocos** flujos documentados; cómo aplica a TC-01.
-4. Cómo evitaron duplicar el recorrido exploratorio entre ustedes **tres**.
-5. Concretamente en **TC-01-013** (ocupado): qué cuidan con datos/entorno compartido.
-6. Si **TC-01-012** o **-013** no se automatizaran todos, cómo explican igual la cobertura (manual, Azure, etc.).
+# Parte A — Análisis, planificación y trazabilidad
 
 ---
 
-## Parte A — Celeste Olmedo (A.6, A.7, A.8, A.9 y TC-03 / HU-03) — *intervención 2*
+## Noelia Mustaff — Introducción, análisis de la aplicación, estrategia y TC-01
 
-### A.6 Flujos críticos priorizados (6)
+### Introducción al proyecto
 
-| ID | Flujo | Área | Prioridad |
-|----|--------|------|------------|
-| F-01 | Reserva de habitación | Público | Alta |
-| F-02 | Verificación de disponibilidad | Público | Alta |
-| F-03 | Envío de mensaje de contacto | Público | Alta |
-| F-04 | Autenticación y sesión administrativa | Admin | Alta |
-| F-05 | Gestión de habitaciones | Admin | Media–Alta |
-| F-06 | Mensajes y contenido en home | Admin | Media (condicional) |
+El proyecto consiste en validar de forma estructurada los flujos principales de **Restful Booker Platform**, una aplicación de reservas hoteleras con panel de administración. El objetivo es demostrar una estrategia QA integral que cubre desde el análisis y la planificación hasta la automatización UI y API, con trazabilidad completa en cada etapa.
 
-### A.7 Tipos de pruebas
+### Análisis de la aplicación
 
-- **Exploratorias**  
-- **BDD (Gherkin)**  
-- **Automatización UI** (POM)  
-- **Automatización API**
+Durante la exploración inicial se relevaron los módulos principales:
 
-### A.8 Historia de Usuario (ejemplo Contact — HU-03)
+- **Pública:** home con listado de habitaciones, flujo de reserva, formulario de contacto.
+- **Administración:** login/logout, gestión de habitaciones (crear, editar, listar), mensajes recibidos.
+
+Se registró el comportamiento real de la app: mensajes de validación, límites de campos, respuestas ante datos incorrectos y restricciones de fechas. Este relevamiento fue la base para priorizar flujos y definir los criterios de aceptación.
+
+### Estrategia QA
+
+| Flujo | Área | Prioridad |
+|-------|------|-----------|
+| F-01 · Reserva de habitación | Público | Alta |
+| F-02 · Verificación de disponibilidad | Público | Alta |
+| F-03 · Envío de mensaje de contacto | Público | Alta |
+| F-04 · Autenticación y sesión administrativa | Admin | Alta |
+| F-05 · Gestión de habitaciones | Admin | Media–Alta |
+| F-06 · Mensajes y contenido en home | Admin | Media |
+
+**Tipos de prueba aplicados:** exploratoria · BDD/Gherkin · automatización UI con POM · automatización API con axios.
+
+**Criterio de éxito:** flujos críticos documentados con trazabilidad historia → caso → Gherkin → ejecución, reporte HTML generado y evidencia cargada en Azure DevOps.
+
+### Casos de prueba — TC-01 (módulo Booking / HU-01)
+
+**HU-01 | Reserva de habitación**
+- **Como** huésped del hotel
+- **Quiero** reservar una habitación seleccionando fechas y completando mis datos
+- **Para** asegurar mi estadía y recibir confirmación o rechazo de la reserva
+
+| ID | Título | Tipo |
+|----|--------|------|
+| TC-01-001 | Reserva exitosa con datos válidos | Happy path |
+| TC-01-011 | Reserva rechazada por conflicto de disponibilidad | Negative |
+| TC-01-012 | Reserva rechazada por fechas pasadas | Negative |
+
+Estos casos están trazados a los escenarios de `features/booking.feature` mediante los tags `@TC-01-001`, `@TC-01-011` y `@TC-01-012`.
+
+---
+
+## Celeste Olmedo — Historias de Usuario, Casos de prueba, Tipos de prueba y TC-03
+
+### Historias de Usuario
+
+Las historias de usuario se documentaron en `docs/historias_de_usuario.md` siguiendo el formato **Como / Quiero / Para** con criterios de aceptación observables. Se definieron historias para los módulos de reserva (HU-01), contacto (HU-03) y administración de habitaciones (HU-05), entre otras.
+
+### Casos de prueba
+
+Los casos se documentaron en una tabla estilo Excel (`docs/casos_de_prueba.md`) con las columnas: ID, título, precondiciones, pasos, datos de entrada, resultado esperado y tipo. Se priorizaron happy paths, negativos y edge cases para cada historia. El inventario total en la tabla es mayor que los escenarios llevados a Gherkin; los casos no automatizados están cargados en Azure DevOps para su seguimiento manual.
+
+### Tipos de prueba
+
+| Tipo | Aplicación en el proyecto |
+|------|--------------------------|
+| Exploratoria | Relevamiento inicial de la app; base para HUs y TCs |
+| BDD / Gherkin | Features en `features/` con lenguaje de negocio |
+| Automatización UI | Cucumber + Playwright + POM |
+| Automatización API | Cucumber + axios sobre `https://restful-booker.herokuapp.com` |
+
+### Casos de prueba — TC-03 (módulo Contacto / HU-03)
 
 **HU-03 | Enviar mensaje de contacto**
+- **Como** visitante del sitio
+- **Quiero** enviar un mensaje con mis datos y el detalle de la consulta
+- **Para** comunicarme con el establecimiento y recibir confirmación o indicación de error
 
-- **Como** visitante del sitio  
-- **Quiero** enviar un mensaje con mis datos y el detalle de la consulta  
-- **Para** comunicarme con el establecimiento y saber si se envió o qué debo corregir  
+| ID | Título | Tipo |
+|----|--------|------|
+| TC-03-001 | Envío exitoso con datos válidos | Happy path |
+| TC-03-006 | Envío con email de formato inválido | Negative |
+| TC-03-012 | Envío con todos los campos vacíos | Negative / smoke |
 
-*Criterios de aceptación completos: `docs/historias_de_usuario.md` (sección HU-03). En análisis era prosa; luego `contact.feature` con `@HU-03`, `@TC-03-…`.*
-
-### A.9 Explicación de **TC-03** (tabla estilo Excel — semana 2)
-
-*Explicás con propiedad los **TC-03-xxx**; base `docs/casos_de_prueba.md` y vínculo a `features/contact.feature`.*  
-*Hay **más** filas de las que a veces se llevan a Gherkin: priorizar en vivo 2–3 y mencionar el resto como “inventario en Azure/Excel”.*
-
-| ID | Título | Precondiciones | Pasos (resumidos) | Datos | Resultado esperado | Tipo |
-|----|--------|----------------|-------------------|--------|--------------------|------|
-| TC-03-001 | Envío exitoso con datos válidos | App accesible, formulario visible | Completar campos válidos; enviar | Nombre, email, teléfono, asunto 5–100, mensaje 20–2000 | Confirmación observable de envío | Happy path |
-| TC-03-002 | Asunto con menos de 5 caracteres | Mismo | Asunto "Hola" (4); resto válido; enviar | Asunto corto | No envía; error en asunto | Negative |
-| TC-03-003 | Asunto límite inferior (5) | Mismo | Asunto exactamente 5 caracteres | 5 chars | Según regla documentada | Edge |
-| TC-03-004 | Asunto límite superior (100) | Mismo | Asunto 100 caracteres | 100 chars | Acepta o error según regla | Edge |
-| TC-03-005 | Mensaje límite inferior (20) | Mismo | Mensaje 20 caracteres; resto válido | 20 chars | Comportamiento acordado | Edge |
-| TC-03-006 | Email inválido | Mismo | Enviar con email sin formato | p. ej. `anaemail.com` | No envía; hint en email | Negative |
-| TC-03-007 | Teléfono fuera de rango | Mismo | Largo < 11 o > 21 según regla | Largo inválido | No envía; error en teléfono | Negative |
-| TC-03-008 | Teléfono con letras o símbolos | Mismo | Si longitud ok pero caracteres raros | p. ej. `abc12345678` | Definir bug o regla; evidencia en Azure | Edge |
-| TC-03-012 | Todos los campos vacíos | Mismo | Enviar sin completar | Vacíos | No envía; campos requeridos señalados | Negative / smoke |
-| … | (resto) | | | | | Módulos TC-01 / TC-05: hablan **Mustaff** y **Cabrera**; ver mismo doc |
-
-**Carga en DevOps (Azure):** el equipo cargó casos en **Test Plans** y vinculó a Work Items: `docs/azure_test_plans.md` y `docs/Screenshots/`. En este turno (después de **TC-01** de Mustaff) conectá **TC-03** y el plan global; **Cabrera** en el bloque 3 remata con **TC-05** bajo el mismo test plan.
-
-### Preguntas guía — Celeste (A)
-
-1. “Backbone” de la tabla F-01–F-06: cómo explicar **F-03** en 30 s.
-2. Por qué F-02 o F-06 tienen criterio distinto (análisis vs automatizar o no).
-3. Exploración + BDD sin duplicar esfuerzo.
-4. Valor de la **API** al lado de la **UI** en este producto.
-5. De prosa a **ID TC-03-xxx**: trazabilidad a escenarios.
-6. Por qué en Excel entran **más** filas que en Gherkin; criterio de corte.
-7. Columnas mínimas de la tabla (semana 2) y por qué importan a Azure.
-8. Si “resultado esperado” era ambiguo en la demo, cómo lo cerraron.
+Estos casos están trazados a los escenarios de `features/contact.feature` mediante los tags `@TC-03-001`, `@TC-03-006` y `@TC-03-012`.
 
 ---
 
-## Parte A — Martín Cabrera (A.3, A.4, A.5 y TC-05 / HU-05) — *intervención 3*
+## Martín Cabrera — Azure DevOps, repositorio y TC-05
 
-### A.3 Priorizar flujos críticos
+### Azure DevOps — Test Plans
 
-- Prioridad por **impacto de negocio** y **riesgo** (reserva, contacto, autenticación, inventario admin), no “cubrir todo”.
+En Azure DevOps se configuró un Test Plan con Test Suites por módulo (Booking, Contact, Rooms Admin). Se cargaron los casos de prueba principales con sus pasos y resultados esperados, y se vincularon a las User Stories correspondientes como Work Items. La evidencia (capturas del plan, suites, casos y vínculos) está disponible en `docs/azure_test_plans.md` y `docs/Screenshots/`.
 
-### A.4 Objetivo del proyecto (fase de análisis)
+### Repositorio
 
-Validar de forma estructurada el comportamiento en flujos acordados, con **documentación viva** (historias, casos, plan en Azure) y base para BDD y automatización reproducible.
+Estructura del proyecto:
 
-### A.5 Alcance — qué sí / qué no
+```
+restful-booker-testing/
+├── features/           # Escenarios Gherkin y step definitions
+│   ├── step_definitions/
+│   └── support/        # Hooks y World
+├── pages/              # Page Objects (POM)
+├── api/                # Tests de API (feature + steps)
+├── constants/          # URLs, mensajes, selectores compartidos
+├── data/               # Datos de prueba (users.json)
+├── docs/               # Documentación del proyecto
+└── reports/            # Reportes HTML generados
+```
 
-| Incluido | Excluido o limitado |
-|----------|----------------------|
-| Flujos públicos: reserva, verificación de disponibilidad (análisis), contacto | Performance, carga, pentesting |
-| Flujos admin: login, habitaciones, mensajes/home (según fragilidad) | Cross-browser exhaustivo, flujos de pago |
-| Casos en Azure Test Plans, trazabilidad a historias | Especificación infiriendo solo exploratoria sin consenso |
-| Automatización UI + API donde aporte estabilidad | F-06 “condicional” a automatizar |
+**Instalación y ejecución:**
 
-### Explicación de **TC-05** (casos de prueba — Rooms / administrador, `docs/casos_de_prueba.md`)
+```bash
+npm install
+npx playwright install
 
-*Explicás los **TC-05-xxx** ligados a **HU-05 | Gestión de habitaciones** y a `features/rooms_admin.feature` (`@TC-05-...`).*
+npm run test:ui:report    # Suite UI con reporte HTML
+npm run test:api:report   # Suite API con reporte HTML
+```
 
-**HU-05 (recordatorio)**
+### Casos de prueba — TC-05 (módulo Rooms Admin / HU-05)
 
-- **Como** administrador  
-- **Quiero** crear, listar y editar habitaciones en el módulo de Rooms  
-- **Para** mantener el inventario publicado coherente  
+**HU-05 | Gestión de habitaciones**
+- **Como** administrador
+- **Quiero** crear, listar y editar habitaciones en el módulo de Rooms
+- **Para** mantener el inventario publicado coherente y actualizado
 
-| ID | Título | Tipo / foco al contar en vivo |
-|----|--------|------------------------------|
-| TC-05-001 | Crear habitación con datos válidos | Happy path; datos ejemplo (101, Double, precio, detalles) y verificación en listado admin |
-| TC-05-004 | Número duplicado | Negative; mensaje esperado “Habitación duplicada…”; decisión de negocio si el sistema aún deja duplicar |
-| TC-05-010 | Cambio de descripción admin → reflejo en pública | Edge: verificación cruzada **admin** ↔ **vista pública** |
+| ID | Título | Tipo |
+|----|--------|------|
+| TC-05-001 | Crear habitación con datos válidos | Happy path |
+| TC-05-004 | Crear habitación con número duplicado | Negative |
+| TC-05-010 | Cambio de descripción en admin se refleja en vista pública | Edge |
 
-> Enfocá la explicación en trazabilidad: tabla Excel → Gherkin → (opcional) riesgo de colisión de datos en demo compartida. **Orden en vivo:** en este punto ya expusieron **TC-01 (Mustaff)** y **TC-03 (Olmedo)**; acá cerrás con F-05 y alineás el cierre con el inventario en Azure.
-
-### Preguntas guía — Martín (A)
-
-1. Cómo definieron qué flujo es “más crítico” con solo el contexto del curso.
-2. Qué dejaste **fuera** del alcance a propósito; quién “habla” por F-05 en la planificación.
-3. Qué sería *scope creep* y cómo lo contuvieron.
-4. Alineación entre alcance de **análisis** y **automatización** final (un ejemplo con TC-05).
-5. Si tuvieran doble de tiempo, ¿más módulos o más profundidad en F-05?
-6. En **TC-05-010:** qué pasa si la pública tarda o no refleja el admin (cómo lo contarías como riesgo).
-
----
-
-# Parte B — Demo y cierre (guion principal) — 3 integrantes
-
-| Orden en vivo | Integrante     | Secciones |
-|---------------|----------------|------------|
-| B – 1         | **Noelia Mustaff**  | B.1 Objetivo + B.2 Estrategia resumida |
-| B – 2         | **Celeste Olmedo**  | B.3 Qué automatizaron + B.4 Qué quedó fuera |
-| B – 3         | **Martín Cabrera**  | B.5 Demo + B.6 Lecciones + cierre |
+Estos casos están trazados a los escenarios de `features/rooms_admin.feature` mediante los tags `@TC-05-001`, `@TC-05-004` y `@TC-05-010`.
 
 ---
 
-## Parte B — Noelia Mustaff (B.1 y B.2) — *intervención 1*
-
-### B.1 Objetivo del proyecto
-
-Demostrar una **estrategia QA integral y profesional** en Restful Booker: de exploración y priorización, con historias y casos trazables en Azure, a **automatización** UI y API con reportes, BDD, POM, datos centralizados.
-
-### B.2 Estrategia resumida
-
-1. Fijar **comportamiento observado** (entorno compartido).  
-2. Priorizar **F-01 a F-06** por negocio/riesgo.  
-3. **HUs y casos** (tabla tipo Excel) antes o con Gherkin.  
-4. Automatizar lo **estable**; F-02/F-06 manual o condicional si la UI frágil.  
-5. **API** reforzando lógica de reservas sin depender solo de la UI.
-
-*Más en `docs/estrategia.md`.*
-
-### Preguntas guía — Noelia (B)
-
-1. En una frase, qué “problema de QA” resuelve la entrega a quien mira.
-2. Qué hace a la entrega “profesional” más allá de tests en verde.
-3. De los 5 pasos, ¿el más costoso para ustedes tres y por qué?
-4. Valor de negocio: respuesta de 20 s. para jurado/aula.
-5. Cómo medir cierre de proyecto sin “solo Gherkin verde”.
+# Parte B — Demo técnica
 
 ---
 
-## Parte B — Celeste Olmedo (B.3 y B.4) — *intervención 2*
+## Noelia Mustaff — POM, selectores y pages
 
-### B.3 Qué automatizaron y por qué
+### Page Object Model
 
-| Qué | Por qué |
-|-----|--------|
-| `booking.feature` (TC-01) | Máximo valor; happy + fechas + conflicto. |
-| `contact.feature` (TC-03) | Validaciones claras; buenos negativos. |
-| `admin_login.feature` | Acceso; outline con combinaciones inválidas. |
-| `rooms_admin.feature` (TC-05) | CRUD, duplicado, admin→público. |
-| `api/api.feature` + steps | HTTP estable; negocio independiente de UI. |
+El proyecto implementa el patrón POM centralizando los locators y las acciones de cada módulo en clases dedicadas bajo `pages/`. Los steps de Cucumber no contienen lógica de UI: solo orquestan llamadas a los métodos de las pages.
 
-*POM: `pages/`, `constants/`, lenguaje Gherkin compartido técnico / negocio.*
+**Pages implementadas:**
 
-*Al hablar, podés citar: **Noelia (TC-01)**, **vos (TC-03)**, **Martín (TC-05)** como quienes explicaron cada prefijo en la Parte A.*
+| Archivo | Módulo |
+|---------|--------|
+| `BasePage.js` | Métodos comunes (navegación, esperas) |
+| `HomePage.js` | Home y acceso a habitaciones |
+| `BookingPage.js` | Flujo completo de reserva |
+| `ContactPage.js` | Formulario de contacto |
+| `AdminPage.js` | Login y sesión administrativa |
+| `RoomsAdminPage.js` | CRUD de habitaciones |
 
-### B.4 Qué quedó fuera o con automatización limitada
+### Selectores y constantes
 
-- **F-02 (solo disponibilidad):** riesgo en **tarjetas** tras el paso; a veces análisis o manual; sin feature aislada solo a “disponibilidad” en el repo.  
-- **F-06 (mensajes / home):** manual o selectivo.  
-- No performance, no pentest, no pagos.  
-- Más filas en Excel / Azure que escenarios: **subconjunto** deliberado, tags `@TC-…`.
+Los selectores y los valores constantes (URLs, mensajes esperados) están centralizados en `constants/`. Esto permite actualizar un locator en un solo lugar sin modificar steps ni tests. Los datos variables (usuarios, credenciales) se gestionan desde `data/users.json`.
 
-### Preguntas guía — Celeste (B) — B.3 y B.4
+### Ejemplo de interacción POM
 
-1. Justificar **Cucumber** + Playwright en 1 min.  
-2. Qué re-automatizar y qué dejar manual en un proyecto hermano.  
-3. Dónde termina requisito de negocio y dónde POM en un `Given/When/Then`.  
-4. Cómo presentan la **API** a no técnicos.  
-5. Test UI inestable: datos, selectores, posponer con tag.  
-6. “No lo automatizamos” con orgullo (F-02 / F-06 / Excel parcial).  
-7. Diferencia entre “falto tiempo” y “no conviene automatizar”.
+Un step como `When el usuario completa el formulario de contacto` llama a `contactPage.fillForm(data)`, que internamente localiza cada campo, ingresa el valor y maneja las esperas. El step no conoce selectores: esa responsabilidad es exclusiva del Page Object.
 
 ---
 
-## Parte B — Martín Cabrera (B.5, B.6 y cierre) — *intervención 3*
+## Celeste Olmedo — Cucumber, features y steps
 
-### B.5 Demo paso a paso
+### Cucumber y BDD
 
-**Preparación:** `npm install`, `npx playwright install` (decir al inicio en voz baja).
+Cucumber actúa como puente entre la documentación de negocio y el código de automatización. Cada escenario en los archivos `.feature` describe un comportamiento observable en lenguaje natural, y los steps en `features/step_definitions/` lo implementan usando los métodos del POM.
 
-1. Mapa del repo: `README`, `features/`, `pages/`, `api/`, `constants/`, `docs/`.  
-2. **Feature** sugerida para leer: `contact.feature` (explicó **Celeste**, TC-03), `booking.feature` (**Noelia**, TC-01) o `rooms_admin.feature` (vos, TC-05), según qué quieran remarcar.  
-3. **Trazabilidad:** comentario `# HU-0x | Cubre TC-…` en el `.feature`.  
-4. `npm run test:ui` o `npm run test:ui:report` → abrir `reports/cucumber-report.html`.  
-5. `npm run test:api` o `test:api:report`.  
-6. Opcional: un **Page Object** (p. ej. `ContactPage.js`, `BookingPage.js` o `RoomsAdminPage.js` según quieran rematar).  
-7. Cierre con **Azure** (`docs/azure_test_plans.md`) y capturas: plan unificado (Noelia = TC-01, Celeste = TC-03, vos = TC-05).
+### Features
 
-*Transición:* *“Esto en Gherkin bajó de la planilla y de lo subido a DevOps.”*
+| Feature | Escenarios | Tags de trazabilidad |
+|---------|------------|----------------------|
+| `booking.feature` | 3 | `@TC-01-001`, `@TC-01-011`, `@TC-01-012` |
+| `contact.feature` | 3 | `@TC-03-001`, `@TC-03-006`, `@TC-03-012` |
+| `admin_login.feature` | 7 (incluye Scenario Outline × 5) | `@TC-04-xxx` |
+| `rooms_admin.feature` | 3 | `@TC-05-001`, `@TC-05-004`, `@TC-05-010` |
 
-### B.6 Lecciones aprendidas (elegir 5–6 para el oral; reparten turnos ustedes tres)
+Todas las features usan lenguaje de negocio: sin selectores, sin IDs técnicos, con resultados verificables en los `Then`.
 
-1. Explorar **antes** de automatizar.  
-2. **Demo pública** → fechas y datos no colisionantes.  
-3. Trazabilidad **HU → TC → Gherkin → Azure** abre boca en auditorías.  
-4. **API + UI** se complementan.  
-5. **POM** amortiza cambio de selectores.  
-6. **Excel** como inventario; Gherkin es subconjunto.  
-7. F-02: documentar riesgo de regresión, no forzar.  
-8. BDD vive si acompaña aceptación; no como “sugar syntax” suelta.
+### Steps
 
-### Cierre (30 segundos)
-
-*“Cerramos el circuito **análisis → planilla y Azure → Gherkin → automatización → reporte** sobre reservas reales, con alcance honesto y lecciones reutilizables.”*
-
-**Turno de cierre (tres, ~20 s c/u):** una lección **personal** por integrante; orden de micrófono sugerido: **Noelia → Celeste → Martín**.
-
-### Preguntas guía — Martín (B) — B.5, B.6 y cierre
-
-1. Plan B si se cae la live demo: 2 archivos o pantallas que muestren el mismo argumento.  
-2. Cómo narran el **reporte** HTML a quien nunca vio BDD.  
-3. Cierre: ¿BDD + POM otra vez?  
-4. F-02 o F-06: qué harían en un **sprint 2** del curso.  
-5. *Para las tres en conjunto en Q&A:* conflicto con repo / Azure / rama.
+Los step definitions conectan el lenguaje Gherkin con el POM. Cada step es corto: instancia o reutiliza el page object del World y delega la acción. Los hooks en `features/support/hooks.js` capturan screenshot y log HTTP ante cualquier fallo, adjuntándolos al reporte HTML automáticamente.
 
 ---
 
-# Apéndice: asignación fija (3 integrantes)
+## Martín Cabrera — API, reportes y cierre
 
-**Orden de exposición (Parte A y Parte B):** 1) **Noelia Mustaff** → 2) **Celeste Olmedo** → 3) **Martín Cabrera**
+### Tests de API
 
-| Parte A | Asignado |
-|---------|----------|
-| Bloque 1: A.1, A.2, **TC-01** (HU-01) | **Noelia Mustaff** |
-| Bloque 2: A.6–A.9, **TC-03** (HU-03), cierre Azure (plan) | **Celeste Olmedo** |
-| Bloque 3: A.3–A.5, **TC-05** (HU-05) | **Martín Cabrera** |
-| **Parte B** |  |
-| B.1, B.2 | **Noelia Mustaff** |
-| B.3, B.4 | **Celeste Olmedo** |
-| B.5, B.6, cierre | **Martín Cabrera** |
+Los tests de API están en `api/api.feature` y `api/api.steps.js`. El cliente HTTP es **axios** y los escenarios cubren el ciclo CRUD completo sobre `https://restful-booker.herokuapp.com`:
 
-*Ajustar solo quien comparte pantalla; el reparto de **TC-01 / TC-03 / TC-05** se mantiene fijo (Mustaff / Olmedo / Cabrera).*
+| Escenario | Endpoint | Validación principal |
+|-----------|----------|----------------------|
+| Listar reservas | `GET /booking` | Status 200 · array de objetos con `bookingid` numérico |
+| Crear reserva | `POST /booking` | Status 200 · `bookingid` presente · campos coinciden con el payload enviado |
+| Actualizar reserva | `PUT /booking/:id` | Status 200 · cuerpo refleja los nuevos valores (requiere token de `/auth`) |
+| Eliminar y verificar | `DELETE /booking/:id` + `GET /booking/:id` | DELETE 201 · GET posterior 404 |
+
+**Resultado de la última ejecución:** 4 escenarios · 4 passed · 0 failed.
+
+### Reportes y evidencia
+
+- **Reporte HTML:** `reports/cucumber-report.html` — archivo único con estado de cada escenario y paso.
+- **Screenshots de fallo:** adjuntos al reporte HTML vía hook (`features/support/hooks.js`).
+- **Logs HTTP:** trazas REQ/RES adjuntas en escenarios fallidos (`DEBUG=pw:api`).
+- **Reportes separados:** `reports/cucumber-report-ui.html` (UI) y `reports/cucumber-report-api.html` (API).
+
+### Cierre
+
+El proyecto recorre el circuito completo de QA:
+
+**Análisis → Historias y casos → Azure DevOps → Gherkin → Automatización UI + API → Reporte**
+
+**Lecciones aprendidas:**
+
+1. Explorar la app antes de automatizar evita asumir comportamientos que el sistema no garantiza.
+2. La trazabilidad HU → TC → Gherkin → Azure permite justificar cada decisión de cobertura.
+3. Los tests de API complementan la UI: detectaron el bug HTTP 400 en `PUT /room/:id` de forma directa.
+4. El POM centraliza los cambios de selectores y mantiene los steps estables.
+5. Documentar lo que se decidió no automatizar es tan importante como lo que sí se automatizó.
+
+---
+
+*Entrega Semana 8 — Proyecto Integrador Final · Academia C&S*
