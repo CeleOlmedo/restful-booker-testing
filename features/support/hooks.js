@@ -1,4 +1,9 @@
-import { BeforeAll, AfterAll, Before, After, Status,
+import {
+  BeforeAll,
+  AfterAll,
+  Before,
+  After,
+  Status,
 } from "@cucumber/cucumber";
 import { chromium } from "playwright";
 import { HomePage } from "../../pages/HomePage.js";
