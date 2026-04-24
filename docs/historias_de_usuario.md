@@ -1,6 +1,7 @@
-# Día 38 Proyecto Final - Análisis y Planificación - Mustaff, Cabrera, Quintana y Olmedo
+# Día 38 Proyecto Final - Análisis y Planificación - Mustaff, Cabrera y Olmedo
 
 ## Historia: HU-01 | Booking
+
 Como huésped del hotel
 Quiero reservar una habitación seleccionando fechas y completando mis datos personales
 Para asegurar mi estadía y conocer de inmediato si la reserva fue aceptada o rechazada
@@ -24,6 +25,7 @@ Pregunta (definición de equipo): ¿Las fechas pasadas deben ser rechazadas por 
 ---
 
 ## Historia: HU-02 | Verificar Disponibilidad
+
 Como huésped
 Quiero verificar la disponibilidad de habitaciones para un rango de fechas
 Para decidir con información confiable si continúo con la reserva
@@ -46,6 +48,7 @@ Pregunta: ¿La verificación debe validarse contra una habitación específica o
 ---
 
 ## Historia: HU-03 | Enviar mensaje de contacto
+
 Como visitante del sitio
 Quiero enviar un mensaje de contacto con mis datos y el detalle de mi consulta
 Para comunicarme con el establecimiento y saber si el mensaje fue enviado o qué debo corregir
@@ -68,6 +71,7 @@ Pregunta: si el teléfono acepta cualquier carácter cumpliendo longitud, docume
 ---
 
 ## Historia: HU-04 | Inicio sesión administrador
+
 Como administrador del sistema
 Quiero iniciar sesión y cerrar sesión de manera controlada
 Para operar módulos sensibles solo cuando estoy autenticado
@@ -90,6 +94,7 @@ Pregunta: ¿existen roles distintos de admin? Si no, mantener casos mínimos cen
 ---
 
 ## Historia: HU-05 | Gestion de habitaciones como administrador
+
 Como administrador
 Quiero crear, listar y editar habitaciones en el módulo de Rooms
 Para mantener el inventario publicado consistente y usable por huéspedes
@@ -112,6 +117,7 @@ Pregunta: ¿los cambios admin se reflejan de inmediato en la vista pública? Def
 ---
 
 ## Historia: HU-06 | Gestión de mensajes y branding
+
 Como administrador
 Quiero gestionar mensajes y el contenido relevante de la página principal
 Para comunicar información actualizada a visitantes y huéspedes
