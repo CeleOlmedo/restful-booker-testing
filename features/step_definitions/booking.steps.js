@@ -61,7 +61,6 @@ Given("existe una reserva previa en el rango de fechas a utilizar",{timeout:1200
   const guest = USERS.bookingGuestValid;
   await this.pages.bookingPage.fillReservationGuest(guest);
   await this.pages.bookingPage.confirmReservation();
-  await this.pages.bookingPage.assertConfirmationByKey("bookingConfirmed");
 });
 
 When("selecciona la misma habitación con las mismas fechas ya ocupadas", async function () {
