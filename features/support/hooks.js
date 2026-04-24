@@ -17,13 +17,34 @@ function registerNetworkDiagnostics(world) {
 
   const push = (line) => world.httpLogLines.push(line);
 
-  world.page.on("request", (req) => {
-    push(`REQ ${req.method()} ${req.url()}`);
-  });
+  world.onRequestLog = (req) => {
+    try {
+      push(`REQ ${req.method()} ${req.url()}`);
+    } catch {
+      push("REQ <omitted: detached request object>");
+    }
+  };
 
-  world.page.on("response", (res) => {
-    push(`RES ${res.status()} ${res.url()}`);
-  });
+  world.onResponseLog = (res) => {
+    try {
+      push(`RES ${res.status()} ${res.url()}`);
+    } catch {
+      push("RES <omitted: detached response object>");
+    }
+  };
+
+  world.page.on("request", world.onRequestLog);
+  world.page.on("response", world.onResponseLog);
+}
+
+function unregisterNetworkDiagnostics(world) {
+  if (!world?.page) return;
+  if (world.onRequestLog) {
+    world.page.off("request", world.onRequestLog);
+  }
+  if (world.onResponseLog) {
+    world.page.off("response", world.onResponseLog);
+  }
 }
 
 let globalBrowser;
@@ -69,6 +90,7 @@ After(async function (scenario) {
       }
     }
   } finally {
+    unregisterNetworkDiagnostics(this);
     if (this.page) await this.page.close().catch(() => {});
     if (this.context) await this.context.close().catch(() => {});
   }
