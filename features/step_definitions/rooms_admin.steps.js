@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { Given, When, Then } from "@cucumber/cucumber";
+import { expect } from "@playwright/test";
 import USERS from "../../data/users.json" with { type: "json" };
 
 Given("el administrador tiene sesi\u00F3n activa", async function () {
@@ -109,10 +110,14 @@ When("navega a la vista p\u00FAblica de la habitaci\u00F3n", async function () {
   await this.pages.roomsPage.openFirstRoomPublicView();
 });
 
-Then("la descripci\u00F3n mostrada coincide con {string}", async function (datasetKey) {
+Then("la descripción mostrada coincide con {string}", async function (datasetKey) {
   const roomData = USERS[datasetKey];
-  assert.ok(roomData, `No existe el dataset de habitaci\u00F3n: ${datasetKey}`);
-  await this.pages.roomsPage.assertDescriptionVisible(roomData.descripcion);
+  assert.ok(roomData, `No existe el dataset de habitación: ${datasetKey}`);
+
+  const text = roomData.descripcion;
+  const escaped = String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+  await expect(this.page.getByText(new RegExp(escaped, "i")).first()).toBeVisible();
 });
 
 Then("muestra el mensaje de rooms con clave {string}", async function (messageKey) {
